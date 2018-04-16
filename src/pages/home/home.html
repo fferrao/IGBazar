@@ -1,53 +1,96 @@
 <ion-header>
   <ion-navbar>
+    <div class="sign-in" *ngIf="!usersService.isLogged" [ngStyle]="{'border-bottom-color': selectedGame ? selectedGame.color : ''}">
+      <ion-icon name="log-in" (click)="login()"></ion-icon>
+      <span (click)="login()">{{'home.nav.signIn' | translate}}</span>
+    </div>
+    <div class="sign-in" *ngIf="usersService.isLogged" [ngStyle]="{'border-bottom-color': selectedGame ? selectedGame.color : ''}">
+      <ion-icon name="log-out" (click)="logout()"></ion-icon>
+      <span (click)="logout()">{{'home.nav.signOut' | translate}}</span>
+    </div>
+
     <ion-title>
       <a id="home-link" href="/">IGBazar</a>
     </ion-title>
 
-    <div class="sign-in">
-      <ion-icon name="log-in"></ion-icon>
-      <span>Sign in</span>
-    </div>
+    <div class="inclined" [ngStyle]="{'border-right-color': selectedGame ? selectedGame.color : ''}"></div>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
+
   <!-- MAIN HOME SEARCHBAR -->
-  <div class="main-search">
-    <h1>Make a quick search</h1>
-    <ion-searchbar (ionInput)="search($event)"></ion-searchbar>
-    <h2>OR</h2>
+  <div id="home" class="main-search">
+    <h1>{{'home.search.title' | translate}}</h1>
+    <ion-searchbar (ionInput)="search($event)" [(ngModel)]="quickSearch"></ion-searchbar>
+    <h2>{{'home.search.or' | translate}}</h2>
   </div>
 
+  <!-- FILTER BAR -->
+    <div id="quick-search" class="quick-search">
+      <div *ngIf="quickSearch" class="main-filters">
+      <button ion-button float-left scrollTo scrollTargetSelector="#home" (click)="resetGames()">Return</button>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-5>
+              <ion-item>
+                <ion-label color="light" floating>{{'home.filter.item' | translate}}</ion-label>
+                <ion-input [(ngModel)]="quickSearch" (ionChange)="updateResult()"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col col-2>
+              <ion-item>
+                <ion-label color="light" floating>{{'home.filter.price' | translate}}</ion-label>
+                <ion-input [(ngModel)]="selectedPrice" (ionChange)="updateResult()"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col col-3>
+            </ion-col>
+            <ion-col col-2>
+              <ion-item>
+                <ion-label color="light" floating>{{'home.filter.status' | translate}}</ion-label>
+                <ion-select [(ngModel)]="selectedStatus" (ionChange)="updateResult()">
+                  <ion-option value="on">Online</ion-option>
+                  <ion-option value="off">Offline</ion-option>
+                  <ion-option value="both" selected>Both</ion-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>
+
   <!-- MAIN GAME LIST -->
-  <div class="games" [ngStyle]="{'min-height': (windowHeight - 387) + 'px'}">
-    <h2>Select a game !</h2>
+  <div class="games" [ngStyle]="{'min-height': (windowHeight - 350) + 'px'}">
+    <h2>{{'home.search.select' | translate}}</h2>
     <div class="game" *ngFor="let game of (gamesObs | async)" (click)="goToMarketGame(game)" [ngStyle]="{'background-image': 'url(' + game.logo + ')'}" scrollTo scrollTargetSelector="#filters">
       <div class="overlay"><span>{{game.name}}</span></div>
     </div>
   </div>
 
   <!-- FILTER BAR -->
-  <div id="filters" class="filters" >
+  <div id="filters" class="filters">
     <h2 *ngIf="selectedGame !== null" [ngStyle]="{'background-color': selectedGame.color}">{{selectedGame.name}}</h2>
     <div *ngIf="selectedGame !== null" [ngStyle]="{'background-color': selectedGame.color} "class="main-filters">
+    <button ion-button float-left scrollTo scrollTargetSelector="#home" (click)="resetGames()">Return</button>
       <ion-grid>
         <ion-row>
           <ion-col col-5>
             <ion-item>
-              <ion-label color="light" floating>Item name</ion-label>
+              <ion-label color="light" floating>{{'home.filter.item' | translate}}</ion-label>
               <ion-input [(ngModel)]="selectedName" (ionChange)="updateResult()"></ion-input>
             </ion-item>
           </ion-col>
           <ion-col col-2>
             <ion-item>
-              <ion-label color="light" floating>Max price</ion-label>
+              <ion-label color="light" floating>{{'home.filter.price' | translate}}</ion-label>
               <ion-input [(ngModel)]="selectedPrice" (ionChange)="updateResult()"></ion-input>
             </ion-item>
           </ion-col>
           <ion-col col-3>
             <ion-item *ngIf="selectedGame.servers.length !== 0">
-              <ion-label color="light" floating>Server(s)</ion-label>
+              <ion-label color="light" floating>{{'home.filter.server' | translate}}</ion-label>
               <ion-select [(ngModel)]="selectedServers" (ionChange)="updateResult()">
                 <ion-option *ngFor="let serv of selectedGame.servers" [value]="serv">{{serv}}</ion-option>
               </ion-select>
@@ -55,7 +98,7 @@
           </ion-col>
           <ion-col col-2>
             <ion-item>
-              <ion-label color="light" floating>Status</ion-label>
+              <ion-label color="light" floating>{{'home.filter.status' | translate}}</ion-label>
               <ion-select [(ngModel)]="selectedStatus" (ionChange)="updateResult()">
                 <ion-option value="on">Online</ion-option>
                 <ion-option value="off">Offline</ion-option>
@@ -70,23 +113,23 @@
 
   <!-- RESULT LIST -->
   <div class="result-list" *ngIf="selectedGame !== null" [ngStyle]="{'min-height': (windowHeight - 266) + 'px'}">
-    <h2 *ngIf="offersList.length === 0">No results...</h2>
+    <h2 *ngIf="offersList.length === 0">{{'home.result.noResult' | translate}}</h2>
     <ion-grid *ngIf="offersList.length !== 0">
       <ion-row>
         <ion-col col-4>
-          <span class="header-text">Offer</span>
+          <span class="header-text">{{'home.result.offer' | translate}}</span>
         </ion-col>
         <ion-col col-2>
-          <span class="header-text">Player</span>
+          <span class="header-text">{{'home.result.player' | translate}}</span>
         </ion-col>
         <ion-col col-2>
-          <span class="header-text">Status</span>
+          <span class="header-text">{{'home.result.status' | translate}}</span>
         </ion-col>
         <ion-col col-2>
-          <span class="header-text">Price</span>
+          <span class="header-text">{{'home.result.price' | translate}}</span>
         </ion-col>
         <ion-col col-2>
-          <span class="header-text">Actions</span>
+          <span class="header-text">{{'home.result.actions' | translate}}</span>
         </ion-col>
       </ion-row>
 
@@ -99,19 +142,19 @@
           <span class="offer-text">{{offer.username}}</span>
         </ion-col>
         <ion-col col-2>
-          <span class="offer-text">Status</span>
+          <span class="offer-text">..Status..</span>
         </ion-col>
         <ion-col col-2>
           <span class="offer-text">{{offer.price}} {{selectedGame.currency}}</span>
         </ion-col>
         <ion-col col-2>
-          <button ion-button outline>
+          <button ion-button color="light" (click)="deleteOffer(offer.id)">
             <ion-icon name="at"></ion-icon>
           </button>
-          <button ion-button outline>
+          <button ion-button color="light">
             <ion-icon name="chatbubbles"></ion-icon>
           </button>
-          <button ion-button outline>
+          <button ion-button color="light">
             <ion-icon name="information-circle"></ion-icon>
           </button>
         </ion-col>
@@ -120,24 +163,25 @@
   </div>
 
   <!-- ADD ORDER BUTTON -->
-  <div *ngIf="selectedGame !== null" class="add-offer" (click)="addOffer()">
-    <ion-icon name="add"></ion-icon>
-    <span>Place new offer</span>
-  </div>
+  <button color="secondary" ion-button *ngIf="selectedGame !== null" class="add-offer" (click)="addOffer()">
+    <span>{{'home.new.offer' | translate}}</span>
+  </button>
 
-  <footer>
+</ion-content>
+
+<ion-footer>
     <ion-row>
       <ion-col col-6>
         <ion-row>
           <ion-col col-6>
-            <h5>Language</h5>
-            <ion-select [(ngModel)]="language">
+            <h5>{{'home.footer.language' | translate}}</h5>
+            <ion-select [(ngModel)]="language" (ionChange)="changeLanguage()">
               <ion-option value="fr">Français</ion-option>
               <ion-option value="en">English</ion-option>
             </ion-select>
           </ion-col>
           <ion-col col-6>
-            <h5>Links</h5>
+            <h5>{{'home.footer.links' | translate}}</h5>
             <ion-row class="link">
                 <ion-icon name="appstore"></ion-icon>
                 <span href="#">Google play</span>
@@ -146,10 +190,6 @@
                 <ion-icon name="ios-appstore"></ion-icon>
                 <span href="#">App-store</span>
             </ion-row>
-            <ion-row class="link">
-                <ion-icon name="logo-windows"></ion-icon>
-                <span href="#">Windows Phone</span>
-            </ion-row>
           </ion-col>
         </ion-row>
       </ion-col>
@@ -157,6 +197,5 @@
 
       </ion-col>
     </ion-row>
-  </footer>
-</ion-content>
+</ion-footer>
 

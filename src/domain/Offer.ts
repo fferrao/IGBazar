@@ -1,15 +1,17 @@
 export class Offer {
-    name: string;
-    desc: string;
-    infos: Array<string>;
-    img: string;
+  id: string;
 
-    price: number;
-    quantity: number;
+  name: string;
+  desc: string;
+  infos: Array<string>;
+  img: string;
 
-    country: string;
-    server: string;
+  price: number;
+  quantity: number;
 
-    user: string;
-    username: string;
+  country: string;
+  server: string;
+
+  user: string;
+  username: string;
 }

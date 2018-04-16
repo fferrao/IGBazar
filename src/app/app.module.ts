@@ -22,19 +22,26 @@ import { ENV } from '../environnement/env';
 import { GamesService } from "../providers/games.provider";
 import { UsersService } from "../providers/users.provider";
 import { OffersService } from "../providers/offers.provider";
+import {ModalCreateOfferComponent} from "../components/modal-create-offer/modal-create-offer";
 
 export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http);
+  return new TranslateHttpLoader(http);
 }
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
+
+    // Components
+    ModalCreateOfferComponent,
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),
+    HttpClientModule,
+    IonicModule.forRoot(MyApp, {
+      mode: 'md' // 'md' | 'ios' | 'wp'
+    }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -50,7 +57,10 @@ export function HttpLoaderFactory(http: HttpClient) {
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage
+    HomePage,
+
+    // Components
+    ModalCreateOfferComponent,
   ],
   providers: [
     StatusBar,

@@ -1,0 +1,9 @@
+modal-create-offer {
+  ion-title .toolbar-title-md, span, h3, .item-input .label-md {
+    color: white;
+  }
+
+  ion-textarea textarea {
+    resize: none !important;
+  }
+}

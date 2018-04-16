@@ -1,3 +1,34 @@
 {
-
+  "home": {
+    "nav": {
+      "signIn": "Se connecter",
+      "signOut": "Déconnection"
+    },
+    "search": {
+      "title": "Lance une recherche...",
+      "or": "OU",
+      "select": "Choisi ton jeu !"
+    },
+    "filter": {
+      "item": "Objet",
+      "price": "Prix max",
+      "server": "Serveur",
+      "status": "Statut"
+    },
+    "result": {
+      "noResult": "Aucun résultat...",
+      "offer": "Offre",
+      "player": "Joueur",
+      "status": "Statut",
+      "price": "Prix",
+      "actions": "Actions"
+    },
+    "new": {
+      "offer": "Ajouter offre"
+    },
+    "footer": {
+      "language": "Langue",
+      "links": "Liens"
+    }
+  }
 }

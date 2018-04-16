@@ -9,18 +9,26 @@ import {Offer} from "../domain/Offer";
 @Injectable()
 export class OffersService {
 
-    constructor(private firestore: AngularFirestore) {
-    }
+  constructor(private firestore: AngularFirestore) {
 
-  public getOffersByGame(gameId: string): Observable<Offer[]> {
-    return this.firestore.collection<Offer>(this.getPath(gameId))
-      .snapshotChanges().map(actions => {
-        return actions.map(a => {
-          const data = a.payload.doc.data() as Offer;
-          const id = a.payload.doc.id;
-          return {id, ...data};
-        });
+  }
+
+  public addOffer(gameId: string, offer: Offer) {
+    return this.firestore.collection<Offer>(this.getPath(gameId)).add({...offer});
+  }
+
+  public getOffersByGameAndFilter(gameId: string): Observable<Offer[]> {
+    return this.firestore.collection<Offer>(this.getPath(gameId)).snapshotChanges().map(actions => {
+      return actions.map(a => {
+        const data = a.payload.doc.data() as Offer;
+        const id = a.payload.doc.id;
+        return {id, ...data};
       });
+    });
+  }
+
+  public deleteOffer(gameId: string, offerId: string) {
+    return this.firestore.collection<Offer>(this.getPath(gameId)).doc(offerId).delete();
   }
 
   private getPath(gameId: string) {

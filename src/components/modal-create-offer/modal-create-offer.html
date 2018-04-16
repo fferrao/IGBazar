@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">X</button>
+    </ion-buttons>
+    <ion-title>{{'home.new.offer' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding [ngStyle]="{'background-color': selectedGame.color}">
+  <h3>{{'home.new.create' | translate}} {{selectedGame.name}}</h3>
+  <form [formGroup]="form">
+    <ion-grid>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.new.title' | translate}}</ion-label>
+            <ion-input type="text" formControlName="name"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.new.desc' | translate}}</ion-label>
+            <ion-textarea formControlName="desc"></ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-6>
+          <ion-item>
+            <ion-label floating>{{'home.result.price' | translate}}</ion-label>
+            <ion-input type="text" formControlName="price"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col col-6>
+          <ion-item>
+            <ion-label floating>{{'home.result.quantity' | translate}}</ion-label>
+            <ion-input type="text" formControlName="quantity"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <button ion-button (click)="createOffer()">{{'home.new.offer' | translate}}</button>
+  </form>
+</ion-content>

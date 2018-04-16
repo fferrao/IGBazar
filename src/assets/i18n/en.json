@@ -1,3 +1,38 @@
 {
-
+  "home": {
+    "nav": {
+      "signIn": "Sign in",
+      "signOut": "Sign out"
+    },
+    "search": {
+      "title": "Make a quick search",
+      "or": "OR",
+      "select": "Select a game !"
+    },
+    "filter": {
+      "item": "Item name",
+      "price": "Max price",
+      "server": "Server",
+      "status": "Status"
+    },
+    "result": {
+      "noResult": "No results...",
+      "offer": "Offer",
+      "player": "Player",
+      "status": "Status",
+      "price": "Price",
+      "quantity": "Quantity",
+      "actions": "Actions"
+    },
+    "new": {
+      "offer": "Add offer",
+      "create": "Create a new offer for",
+      "title": "Title",
+      "desc": "Description"
+    },
+    "footer": {
+      "language": "Language",
+      "links": "Links"
+    }
+  }
 }

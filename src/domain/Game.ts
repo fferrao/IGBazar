@@ -1,11 +1,11 @@
 export class Game {
-    id: string;
-    name: string;
-    shortname: string;
+  id: string;
+  name: string;
+  shortname: string;
 
-    currency: string;
+  currency: string;
 
-    color: string;
-    logo: string;
-    servers: Array<string>;
+  color: string;
+  logo: string;
+  servers: Array<string>;
 }
