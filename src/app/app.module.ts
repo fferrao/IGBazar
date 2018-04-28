@@ -5,6 +5,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
+import { ClipboardModule } from 'ngx-clipboard';
 import { ScrollToModule } from "ng2-scroll-to";
 
 import { MyApp } from './app.component';
@@ -22,7 +23,14 @@ import { ENV } from '../environnement/env';
 import { GamesService } from "../providers/games.provider";
 import { UsersService } from "../providers/users.provider";
 import { OffersService } from "../providers/offers.provider";
-import {ModalCreateOfferComponent} from "../components/modal-create-offer/modal-create-offer";
+
+import { ModalCreateOfferComponent } from "../components/modal-create-offer/modal-create-offer";
+import { ModalConnectionComponent } from "../components/modal-connection/modal-connection";
+import { ModalProfileComponent } from "../components/modal-profile/modal-profile";
+import { ModalDisplayOfferComponent } from "../components/modal-display-offer/modal-display-offer";
+
+import { Utils } from "../utils/Utils";
+import { DOCUMENT } from "@angular/common";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -35,6 +43,9 @@ export function HttpLoaderFactory(http: HttpClient) {
 
     // Components
     ModalCreateOfferComponent,
+    ModalConnectionComponent,
+    ModalProfileComponent,
+    ModalDisplayOfferComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,13 +57,15 @@ export function HttpLoaderFactory(http: HttpClient) {
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
+        deps: [HttpClient, DOCUMENT]
       }
     }),
     ScrollToModule.forRoot(),
+    ClipboardModule,
     AngularFireModule.initializeApp(ENV.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    HttpClientModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -61,6 +74,9 @@ export function HttpLoaderFactory(http: HttpClient) {
 
     // Components
     ModalCreateOfferComponent,
+    ModalConnectionComponent,
+    ModalProfileComponent,
+    ModalDisplayOfferComponent,
   ],
   providers: [
     StatusBar,
@@ -69,6 +85,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     GamesService,
     UsersService,
     OffersService,
+    Utils,
   ]
 })
 export class AppModule {}

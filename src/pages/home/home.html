@@ -1,3 +1,6 @@
+<!-------------------------->
+<!--   HEADER & NAVBAR    -->
+<!-------------------------->
 <ion-header>
   <ion-navbar>
     <div class="sign-in" *ngIf="!usersService.isLogged" [ngStyle]="{'border-bottom-color': selectedGame ? selectedGame.color : ''}">
@@ -5,116 +8,102 @@
       <span (click)="login()">{{'home.nav.signIn' | translate}}</span>
     </div>
     <div class="sign-in" *ngIf="usersService.isLogged" [ngStyle]="{'border-bottom-color': selectedGame ? selectedGame.color : ''}">
+      <span (click)="profile()">{{usersService.getName()}}</span>
       <ion-icon name="log-out" (click)="logout()"></ion-icon>
-      <span (click)="logout()">{{'home.nav.signOut' | translate}}</span>
     </div>
 
     <ion-title>
       <a id="home-link" href="/">IGBazar</a>
     </ion-title>
-
-    <div class="inclined" [ngStyle]="{'border-right-color': selectedGame ? selectedGame.color : ''}"></div>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
 
-  <!-- MAIN HOME SEARCHBAR -->
-  <div id="home" class="main-search">
+  <!-------------------------->
+  <!-- MAIN HOME SEARCH BAR -->
+  <!-------------------------->
+  <div id="home" class="main-search" [ngStyle]="{'height': '330px'}">
     <h1>{{'home.search.title' | translate}}</h1>
-    <ion-searchbar (ionInput)="search($event)" [(ngModel)]="quickSearch"></ion-searchbar>
-    <h2>{{'home.search.or' | translate}}</h2>
+    <ion-searchbar *ngIf="gamesList" [(ngModel)]="quickSearch"></ion-searchbar>
+    <ion-grid *ngIf="gamesList" class="quick-search-submit">
+      <ion-row>
+        <ion-col>
+          <button ion-button float-right scrollTo scrollTargetSelector="#quick-search" (click)="search()"
+                  [ngStyle]="{'visibility': quickSearch ? 'visible' : 'hidden'}">Go !</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <!-- h2>{{'home.search.or' | translate}}</h2 -->
   </div>
 
-  <!-- FILTER BAR -->
-    <div id="quick-search" class="quick-search">
-      <div *ngIf="quickSearch" class="main-filters">
-      <button ion-button float-left scrollTo scrollTargetSelector="#home" (click)="resetGames()">Return</button>
-        <ion-grid>
-          <ion-row>
-            <ion-col col-5>
-              <ion-item>
-                <ion-label color="light" floating>{{'home.filter.item' | translate}}</ion-label>
-                <ion-input [(ngModel)]="quickSearch" (ionChange)="updateResult()"></ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col col-2>
-              <ion-item>
-                <ion-label color="light" floating>{{'home.filter.price' | translate}}</ion-label>
-                <ion-input [(ngModel)]="selectedPrice" (ionChange)="updateResult()"></ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col col-3>
-            </ion-col>
-            <ion-col col-2>
-              <ion-item>
-                <ion-label color="light" floating>{{'home.filter.status' | translate}}</ion-label>
-                <ion-select [(ngModel)]="selectedStatus" (ionChange)="updateResult()">
-                  <ion-option value="on">Online</ion-option>
-                  <ion-option value="off">Offline</ion-option>
-                  <ion-option value="both" selected>Both</ion-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </div>
-    </div>
-
-  <!-- MAIN GAME LIST -->
-  <div class="games" [ngStyle]="{'min-height': (windowHeight - 350) + 'px'}">
+  <!-------------------------->
+  <!--   MAIN GAMES LIST    -->
+  <!-------------------------->
+  <div class="games" [ngStyle]="{'height': (windowHeight - 430) + 'px'}">
     <h2>{{'home.search.select' | translate}}</h2>
-    <div class="game" *ngFor="let game of (gamesObs | async)" (click)="goToMarketGame(game)" [ngStyle]="{'background-image': 'url(' + game.logo + ')'}" scrollTo scrollTargetSelector="#filters">
-      <div class="overlay"><span>{{game.name}}</span></div>
-    </div>
+    <ion-scroll class="game-scroll" zooming="false" scrollX="true">
+      <ion-row nowrap>
+        <ion-col col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 class="game" *ngFor="let game of (gamesObs | async)" (click)="goToMarketGame(game)" [ngStyle]="{'background-image': 'url(' + game.logo + ')'}" scrollTo scrollTargetSelector="#filters">
+        </ion-col>
+      </ion-row>
+    </ion-scroll>
   </div>
 
-  <!-- FILTER BAR -->
-  <div id="filters" class="filters">
-    <h2 *ngIf="selectedGame !== null" [ngStyle]="{'background-color': selectedGame.color}">{{selectedGame.name}}</h2>
-    <div *ngIf="selectedGame !== null" [ngStyle]="{'background-color': selectedGame.color} "class="main-filters">
-    <button ion-button float-left scrollTo scrollTargetSelector="#home" (click)="resetGames()">Return</button>
+  <!-------------------------->
+  <!--      FILTER BAR      -->
+  <!-------------------------->
+  <div #globalList id="quick-search" class="quick-search">
+    <h2 *ngIf="quickSearch">IGBazar</h2>
+    <div *ngIf="quickSearch" class="main-filters">
       <ion-grid>
         <ion-row>
-          <ion-col col-5>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4>
             <ion-item>
               <ion-label color="light" floating>{{'home.filter.item' | translate}}</ion-label>
-              <ion-input [(ngModel)]="selectedName" (ionChange)="updateResult()"></ion-input>
+              <ion-input #nameInput [(ngModel)]="selectedName"></ion-input>
             </ion-item>
           </ion-col>
           <ion-col col-2>
             <ion-item>
               <ion-label color="light" floating>{{'home.filter.price' | translate}}</ion-label>
-              <ion-input [(ngModel)]="selectedPrice" (ionChange)="updateResult()"></ion-input>
+              <ion-input type="number" [(ngModel)]="selectedPrice"></ion-input>
             </ion-item>
           </ion-col>
-          <ion-col col-3>
-            <ion-item *ngIf="selectedGame.servers.length !== 0">
-              <ion-label color="light" floating>{{'home.filter.server' | translate}}</ion-label>
-              <ion-select [(ngModel)]="selectedServers" (ionChange)="updateResult()">
-                <ion-option *ngFor="let serv of selectedGame.servers" [value]="serv">{{serv}}</ion-option>
-              </ion-select>
-            </ion-item>
-          </ion-col>
-          <ion-col col-2>
+          <ion-col offset-4 col-2>
             <ion-item>
-              <ion-label color="light" floating>{{'home.filter.status' | translate}}</ion-label>
-              <ion-select [(ngModel)]="selectedStatus" (ionChange)="updateResult()">
-                <ion-option value="on">Online</ion-option>
-                <ion-option value="off">Offline</ion-option>
-                <ion-option value="both" selected>Both</ion-option>
+              <ion-label color="light" stacked>{{'home.filter.status' | translate}}</ion-label>
+              <ion-select [(ngModel)]="selectedStatus" (ionChange)="filterByStatus(offersGlobalList, true)">
+                <ion-option value="Online">Online</ion-option>
+                <ion-option value="Offline">Offline</ion-option>
+                <ion-option value="">Both</ion-option>
               </ion-select>
             </ion-item>
+          </ion-col>
+         </ion-row>
+
+         <ion-row>
+          <ion-col col-3>
+            <button ion-button float-left (click)="updateGlobalResult()">Refresh</button>
+            <button ion-button float-right scrollTo scrollTargetSelector="#home" (click)="resetGames()">Return</button>
           </ion-col>
         </ion-row>
       </ion-grid>
     </div>
   </div>
 
-  <!-- RESULT LIST -->
-  <div class="result-list" *ngIf="selectedGame !== null" [ngStyle]="{'min-height': (windowHeight - 266) + 'px'}">
-    <h2 *ngIf="offersList.length === 0">{{'home.result.noResult' | translate}}</h2>
-    <ion-grid *ngIf="offersList.length !== 0">
+  <!-------------------------->
+  <!--  RESULT GLOBAL LIST  -->
+  <!-------------------------->
+  <div *ngIf="quickSearch" class="result-list" [ngStyle]="{'min-height': (windowHeight - 242) + 'px'}">
+    <h2 *ngIf="quickSearch && offersGlobalFilteredList.length === 0 && !isLoading">{{'home.result.noResult' | translate}}</h2>
+    <h2 *ngIf="quickSearch && offersGlobalFilteredList.length === 0 && isLoading">
+      {{'home.loading' | translate}}
+      <ion-spinner name="bubbles"></ion-spinner>
+    </h2>
+    <ion-grid *ngIf="quickSearch && offersGlobalFilteredList.length !== 0">
       <ion-row>
         <ion-col col-4>
           <span class="header-text">{{'home.result.offer' | translate}}</span>
@@ -133,69 +122,227 @@
         </ion-col>
       </ion-row>
 
-      <ion-row *ngFor="let offer of offersList" class="line" (click)="displayOffer(selectedGame.id, offer.id)">
-        <ion-col col-4>
-          <div class="offer-icon" [ngStyle]="{'background-image' : 'url(' + offer.img + ')'}"></div>
-          <span class="offer-text">{{offer.name}}</span>
-        </ion-col>
-        <ion-col col-2>
-          <span class="offer-text">{{offer.username}}</span>
-        </ion-col>
-        <ion-col col-2>
-          <span class="offer-text">..Status..</span>
-        </ion-col>
-        <ion-col col-2>
-          <span class="offer-text">{{offer.price}} {{selectedGame.currency}}</span>
-        </ion-col>
-        <ion-col col-2>
-          <button ion-button color="light" (click)="deleteOffer(offer.id)">
-            <ion-icon name="at"></ion-icon>
-          </button>
-          <button ion-button color="light">
-            <ion-icon name="chatbubbles"></ion-icon>
-          </button>
-          <button ion-button color="light">
-            <ion-icon name="information-circle"></ion-icon>
-          </button>
-        </ion-col>
-      </ion-row>
+      <!-------------------------->
+      <!-- RESULT SCROLL BLOCK  -->
+      <!-------------------------->
+      <ion-scroll zooming="false" scrollY="true" [ngStyle]="{'min-height': (windowHeight - 387) + 'px'}">
+        <ion-row class="content-row" *ngFor="let offer of offersGlobalFilteredList"
+                  [ngStyle]="{'background-color': offer.user === usersService.getUid() ? '#8659a0' : ''}">
+          <div *ngIf="(selectedStatus ? offer.status === selectedStatus : true) && !offer.copyToClipboard" class="line">
+            <ion-col col-4>
+              <div class="offer-icon" [ngStyle]="{'background-image' : offer.img ? 'url(' + offer.img + ')' : 'url(http://www.clker.com/cliparts/i/A/s/2/q/9/purple-dollar-sign-hi.png)'}"></div>
+              <span class="offer-text">{{offer.name}}</span>
+            </ion-col>
+            <ion-col col-2>
+              <span class="offer-text">{{offer.username}}</span>
+            </ion-col>
+            <ion-col col-2>
+              <span *ngIf="offer.status" class="offer-text">{{offer.status}}</span>
+            </ion-col>
+            <ion-col col-2>
+              <span class="offer-text">{{offer.price}}</span>
+            </ion-col>
+            <ion-col col-2 text-center>
+              <button *ngIf="offer.user === usersService.getUid()" ion-button color="light" (click)="deleteOffer(offer.id)">
+                <ion-icon name="remove-circle"></ion-icon>
+              </button>
+              <button *ngIf="offer.user !== usersService.getUid()" ion-button color="light" (click)="setOfferCopyMode(offer, true)">
+                <ion-icon name="chatbubbles"></ion-icon>
+              </button>
+              <button ion-button color="light" (click)="displayOffer(offer)">
+                <ion-icon name="information-circle"></ion-icon>
+              </button>
+            </ion-col>
+          </div>
+          <div *ngIf="(selectedStatus ? offer.status === selectedStatus : true) && offer.copyToClipboard" class="line">
+            <ion-col col-10 align-items-center>
+              <ion-input class="copy-text" readonly [(ngModel)]="offer.copyWhisp"></ion-input>
+            </ion-col>
+            <ion-col col-2 text-center>
+              <button ion-button color="light" (click)="setOfferCopyMode(offer, false)">
+                <ion-icon name="remove"></ion-icon>
+              </button>
+              <button ion-button color="light" (click)="displayOffer(offer)">
+                <ion-icon name="information-circle"></ion-icon>
+              </button>
+            </ion-col>
+          </div>
+        </ion-row>
+      </ion-scroll>
     </ion-grid>
   </div>
 
-  <!-- ADD ORDER BUTTON -->
-  <button color="secondary" ion-button *ngIf="selectedGame !== null" class="add-offer" (click)="addOffer()">
-    <span>{{'home.new.offer' | translate}}</span>
-  </button>
+  <!-------------------------->
+  <!--      FILTER BAR      -->
+  <!-------------------------->
+  <div id="filters" class="filters">
+    <h2 *ngIf="selectedGame !== null" [ngStyle]="{'background-color': selectedGame.color}">{{selectedGame.name}}</h2>
+    <div *ngIf="selectedGame !== null" [ngStyle]="{'background-color': selectedGame.color} "class="main-filters">
+      <ion-grid>
+        <ion-row align-items-baseline>
+          <ion-col col-5>
+            <ion-item>
+              <ion-label color="light" floating>{{'home.filter.item' | translate}}</ion-label>
+              <ion-input [(ngModel)]="selectedName"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col col-2>
+            <ion-item>
+              <ion-label color="light" floating>{{'home.filter.price' | translate}}</ion-label>
+              <ion-input type="number" [(ngModel)]="selectedPrice"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col col-3>
+            <ion-item *ngIf="selectedGame.servers.length !== 0">
+              <ion-label color="light" stacked>{{'home.filter.server' | translate}}</ion-label>
+              <ion-select [(ngModel)]="selectedServers">
+                <ion-option value="">{{'home.filter.all' | translate}}</ion-option>
+                <ion-option *ngFor="let serv of selectedGame.servers" [value]="serv">{{serv}}</ion-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          <ion-col col-2 align-self-baseline>
+            <ion-item>
+              <ion-label color="light" stacked>{{'home.filter.status' | translate}}</ion-label>
+              <ion-select [(ngModel)]="selectedStatus" (ionChange)="filterByStatus(offersList, false)">
+                <ion-option value="Online">Online</ion-option>
+                <ion-option value="Offline">Offline</ion-option>
+                <ion-option value="">Both</ion-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col col-3>
+            <button color="light" ion-button float-left (click)="updateResult()">Refresh</button>
+            <button color="light" ion-button float-right scrollTo scrollTargetSelector="#home" (click)="resetGames()">Return</button>
+          </ion-col>
+          <ion-col col-2 offset-7>
+            <button color="light" *ngIf="usersService.getUid()" float-right ion-button (click)="addOffer()">
+              <span>{{'home.new.offer' | translate}}</span>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+
+  <!-------------------------->
+  <!--     RESULT LIST      -->
+  <!-------------------------->
+  <div class="result-list" [ngStyle]="{'min-height': (windowHeight - 330) + 'px'}">
+    <h2 *ngIf="selectedGame !== null && offersListFiltered.length === 0  && !isLoading">{{'home.result.noResult' | translate}}</h2>
+    <h2 *ngIf="selectedGame !== null && offersListFiltered.length === 0  && isLoading">
+      {{'home.loading' | translate}}
+      <ion-spinner name="bubbles"></ion-spinner>
+    </h2>
+    <ion-grid *ngIf="selectedGame !== null && offersListFiltered.length !== 0">
+      <ion-row>
+        <ion-col col-4>
+          <span class="header-text">{{'home.result.offer' | translate}}</span>
+        </ion-col>
+        <ion-col col-2>
+          <span class="header-text">{{'home.result.player' | translate}}</span>
+        </ion-col>
+        <ion-col col-2>
+          <span class="header-text">{{'home.result.status' | translate}}</span>
+        </ion-col>
+        <ion-col col-2>
+          <span class="header-text">{{'home.result.price' | translate}}</span>
+        </ion-col>
+        <ion-col col-2>
+          <span class="header-text">{{'home.result.actions' | translate}}</span>
+        </ion-col>
+      </ion-row>
+
+      <!-------------------------->
+      <!--  RESULT SCROLL LIST  -->
+      <!-------------------------->
+      <ion-scroll zooming="false" scrollY="true" [ngStyle]="{'min-height': (windowHeight - 388) + 'px'}">
+        <ion-row class="content-row" *ngFor="let offer of offersListFiltered"
+                  [ngStyle]="{'background-color': offer.user === usersService.getUid() ? selectedGame.color : 'none'}">
+          <div *ngIf="(selectedStatus ? offer.status === selectedStatus : true) && !offer.copyToClipboard" class="line">
+            <ion-col col-4>
+              <div class="offer-icon" [ngStyle]="{'background-image' : offer.img ? 'url(' + offer.img + ')' : 'url(' + selectedGame.placeholder + ')'}"></div>
+              <span class="offer-text"
+                    [ngStyle]="{'color': offer.user === usersService.getUid() ? selectedGame.colorText : ''}">
+                    {{offer.name}}</span>
+            </ion-col>
+            <ion-col col-2>
+              <span class="offer-text"
+                    [ngStyle]="{'color': offer.user === usersService.getUid() ? selectedGame.colorText : ''}">
+                    {{offer.username}}</span>
+            </ion-col>
+            <ion-col col-2>
+              <span class="offer-text"
+                    [ngStyle]="{'color': offer.user === usersService.getUid() ? selectedGame.colorText : ''}">
+                    {{offer.status ? offer.status : ""}}</span>
+            </ion-col>
+            <ion-col col-2>
+              <span class="offer-text"
+                    [ngStyle]="{'color': offer.user === usersService.getUid() ? selectedGame.colorText : ''}">
+                    {{offer.price}} {{selectedGame.currency}}</span>
+            </ion-col>
+            <ion-col col-2 text-center>
+              <button *ngIf="offer.user === usersService.getUid()" ion-button color="light" (click)="deleteOffer(offer.id)">
+                <ion-icon name="remove-circle"></ion-icon>
+              </button>
+              <button *ngIf="offer.user !== usersService.getUid()" ion-button color="light" (click)="setOfferCopyMode(offer, true)">
+                <ion-icon name="chatbubbles"></ion-icon>
+              </button>
+              <button ion-button color="light" (click)="displayOffer(offer)">
+                <ion-icon name="information-circle"></ion-icon>
+              </button>
+            </ion-col>
+          </div>
+          <div *ngIf="(selectedStatus ? offer.status === selectedStatus : true) && offer.copyToClipboard" class="line">
+            <ion-col col-10 align-items-center>
+              <ion-input class="copy-text" readonly [(ngModel)]="offer.copyWhisp"></ion-input>
+            </ion-col>
+            <ion-col col-2 text-center>
+              <button ion-button color="light" (click)="setOfferCopyMode(offer, false)">
+                <ion-icon name="remove"></ion-icon>
+              </button>
+              <button ion-button color="light" (click)="displayOffer(offer)">
+                <ion-icon name="information-circle"></ion-icon>
+              </button>
+            </ion-col>
+          </div>
+        </ion-row>
+      </ion-scroll>
+    </ion-grid>
+  </div>
+
+  <!-------------------------->
+  <!--  ADD ORDER BUTTON    -->
+  <!-------------------------->
 
 </ion-content>
 
+<!-------------------------->
+<!--        FOOTER        -->
+<!-------------------------->
 <ion-footer>
-    <ion-row>
-      <ion-col col-6>
-        <ion-row>
-          <ion-col col-6>
-            <h5>{{'home.footer.language' | translate}}</h5>
-            <ion-select [(ngModel)]="language" (ionChange)="changeLanguage()">
-              <ion-option value="fr">Français</ion-option>
-              <ion-option value="en">English</ion-option>
-            </ion-select>
-          </ion-col>
-          <ion-col col-6>
-            <h5>{{'home.footer.links' | translate}}</h5>
-            <ion-row class="link">
-                <ion-icon name="appstore"></ion-icon>
-                <span href="#">Google play</span>
-            </ion-row>
-            <ion-row class="link">
-                <ion-icon name="ios-appstore"></ion-icon>
-                <span href="#">App-store</span>
-            </ion-row>
-          </ion-col>
-        </ion-row>
-      </ion-col>
-      <ion-col col-6>
+  <ion-row align-items-center>
+    <ion-col col-4 align-items-center>
+      <ion-select [(ngModel)]="language" (ionChange)="changeLanguage()">
+        <ion-option value="fr">Français</ion-option>
+        <ion-option value="en">English</ion-option>
+      </ion-select>
+    </ion-col>
 
-      </ion-col>
-    </ion-row>
+    <ion-col col-2 class="links" align-items-center>
+      <ion-icon name="appstore"></ion-icon>
+    </ion-col>
+    <ion-col col-2 class="links" align-items-center>
+      <ion-icon name="ios-appstore"></ion-icon>
+    </ion-col>
+
+
+    <!-- ion-col col-3 offset-1 align-items-center>
+      <button ion-button (click)="resetData()">TestData Create</button>
+    </ion-col -->
+  </ion-row>
 </ion-footer>
 

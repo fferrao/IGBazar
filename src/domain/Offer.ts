@@ -14,4 +14,9 @@ export class Offer {
 
   user: string;
   username: string;
+
+  status: string;
+
+  copyToClipboard: boolean;
+  copyWhisp: string;
 }

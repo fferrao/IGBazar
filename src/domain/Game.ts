@@ -7,5 +7,6 @@ export class Game {
 
   color: string;
   logo: string;
+  placeholder: string;
   servers: Array<string>;
 }

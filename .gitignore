@@ -4,3 +4,6 @@
 .DS_Store
 .idea
 .sourcemaps
+
+/src/**.js
+/src/**.js.map

@@ -1,15 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import {ModalController, NavController} from 'ionic-angular';
-import { GamesService } from "../../providers/games.provider";
-import { Game } from "../../domain/Game";
+import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AlertController, ModalController, NavController } from 'ionic-angular';
+
 import { Observable } from "rxjs/Observable";
 import { Subscription } from "rxjs/Subscription";
+
+import { GamesService } from "../../providers/games.provider";
 import { OffersService } from "../../providers/offers.provider";
+import { UsersService } from "../../providers/users.provider";
+import { TranslateService } from "@ngx-translate/core";
+
+import { ModalCreateOfferComponent } from "../../components/modal-create-offer/modal-create-offer";
+import { ModalConnectionComponent } from "../../components/modal-connection/modal-connection";
+import { ModalProfileComponent } from "../../components/modal-profile/modal-profile";
+import { ModalDisplayOfferComponent } from "../../components/modal-display-offer/modal-display-offer";
+
+import { Game } from "../../domain/Game";
+import { User } from "../../domain/User";
+
+import { Utils } from "../../utils/Utils";
 import { Offer } from "../../domain/Offer";
-import {TranslateService} from "@ngx-translate/core";
-import {UsersService} from "../../providers/users.provider";
-import {Utils} from "../../utils/Utils";
-import {ModalCreateOfferComponent} from "../../components/modal-create-offer/modal-create-offer";
+
+import 'rxjs/add/operator/take';
 
 @Component({
   selector: 'page-home',
@@ -17,52 +28,82 @@ import {ModalCreateOfferComponent} from "../../components/modal-create-offer/mod
 })
 export class HomePage implements OnInit {
 
+  @ViewChild('globalList') globalList;
+  @ViewChild('nameInput') nameInput;
+
   // Global usefull vars
   private windowHeight: number;
 
   // Quick search input
   private quickSearch: string;
 
+  private isLoading: boolean;
+
   // Fields data
   private language: string;
   private selectedGame: Game;
   private selectedName: string;
-  private selectedPrice: number;
+  private selectedPrice: string;
   private selectedServers: string;
   private selectedStatus: string;
 
   // Result list of offers
-  private offersList: Array<Offer>;
+  private offersList: Array<any>;
+  private offersListFiltered: Array<any>;
+
+  // Result of global list
+  private offersGlobalSubs: Array<Subscription>;
+  private offersGlobalMap: Map<string, Array<any>>;
+  private offersGlobalList: Array<any>;
+  private offersGlobalFilteredList: Array<any>;
 
   // Observable and Subscriptions
   private gamesObs: Observable<Game[]>;
+  private gamesList: Game[];
   private subscriptions: Subscription[];
+  private resultSubscription: Subscription;
+
+  /**********************************
+   *    CONSTRUCTOR & ON-EVENTS     *
+   **********************************/
 
   /**
    * Constructor of app.
    * @param {NavController} navCtrl
    * @param {TranslateService} translateService
    * @param {ModalController} modalController
+   * @param {AlertController} alertController
    * @param {GamesService} gamesService
    * @param {OffersService} offersService
    * @param {UsersService} usersService
+   * @param {Utils} utils
+   * @param {Renderer2} renderer
    */
   constructor(private navCtrl: NavController, private translateService: TranslateService,
-              private modalController: ModalController,
+              private modalController: ModalController, private alertController: AlertController,
               private gamesService: GamesService, private offersService: OffersService,
-              public usersService: UsersService) {
+              private usersService: UsersService, private utils: Utils, private renderer: Renderer2) {
     this.windowHeight = window.innerHeight;
 
     this.language = "en";
+    this.isLoading = false;
     this.translateService.setDefaultLang(this.language);
 
     this.selectedGame = null;
     this.selectedName = "";
-    this.selectedPrice = null;
+    this.selectedPrice = "0";
     this.selectedServers = "";
     this.selectedStatus = "";
 
     this.offersList = [];
+    this.offersListFiltered = [];
+
+    this.resultSubscription = null;
+
+    this.offersGlobalSubs = [];
+    this.offersGlobalMap = new Map<string, Array<any>>();
+    this.offersGlobalList = [];
+    this.offersGlobalFilteredList = [];
   }
 
   /**
@@ -74,7 +115,7 @@ export class HomePage implements OnInit {
     // Get games
     this.gamesObs = this.gamesService.getGames();
     this.subscriptions.push(this.gamesObs.subscribe((games) => {
-        games.forEach((game) => console.log(game.name + " module loaded."))
+      this.gamesList = games;
     }));
   }
 
@@ -87,16 +128,15 @@ export class HomePage implements OnInit {
     });
   }
 
+  /**********************************
+   *    LOGIN, LOGOUT & PROFILE     *
+   **********************************/
+
   /**
-   * Get logged in.
+   * Open login/signup modal.
    */
   public login() {
-    try {
-      this.usersService.loginWithGoogle();
-    }
-    catch (e) {
-      console.log(e);
-    }
+    this.modalController.create(ModalConnectionComponent).present();
   }
 
   /**
@@ -107,10 +147,29 @@ export class HomePage implements OnInit {
   }
 
   /**
+   * Open profile modal.
+   */
+  public profile() {
+    this.modalController.create(ModalProfileComponent, {games: this.gamesList}).present();
+  }
+
+  /**********************************
+   *        SEARCH & FILTERS        *
+   **********************************/
+
+  /**
    * Main search method
    */
   public search() {
-    console.log(this.quickSearch);
+    // Timeout needed by ionic before focus
+    setTimeout(() => {
+      if(this.nameInput) {
+        this.selectedName = this.quickSearch;
+        this.nameInput.setFocus();
+        this.globalList.nativeElement.scrollIntoView();
+        this.updateGlobalResult();
+      }
+    }, 150);
   }
 
   /**
@@ -123,43 +182,160 @@ export class HomePage implements OnInit {
   }
 
   /**
-   * Update result on change value of filters.
+   * Update result on change value of filters of quick search.
    */
-  public updateResult() {
-    if(this.selectedGame) {
-      this.offersService.getOffersByGameAndFilter(this.selectedGame.id).subscribe((offers) => {
-        this.offersList = offers;
+  public updateGlobalResult() {
+    const promises = [];
 
-        // Filter by name
-        this.offersList = this.selectedName ? this.offersList.filter((offer) => {
-          return offer.name.trim().toLowerCase().indexOf(this.selectedName.trim().toLocaleLowerCase()) !== -1;
-        }) : this.offersList;
+    if(!this.selectedName) {
+      this.offersGlobalFilteredList = [];
+    } else {
+      this.offersGlobalList = [];
+      this.offersGlobalFilteredList = [];
+      this.isLoading = true;
 
-        // Filter by price
-        this.offersList = this.selectedPrice ? this.offersList.filter((offer) => {
-          return offer.price <= this.selectedPrice;
-        }) : this.offersList;
+      // Separate offers inside a map and merge it at the end
+      this.gamesList.forEach((game) => {
+        this.offersService.getOffersByGameAndFilterCloud(game.id, this.selectedName, parseInt(this.selectedPrice), this.selectedServers).take(1).subscribe((res) => {
+          const offers = res.data;
 
-        // Filter by server
-        this.offersList = this.selectedServers ? this.offersList.filter((offer) => {
-          return offer.server === this.selectedServers;
-        }) : this.offersList;
+          // Set link between game and offers
+          this.offersGlobalMap.set(game.id, offers);
 
-        // Filter by status
-        this.offersList = this.selectedStatus ? this.offersList.filter((offer) => {
-          return true;
-        }) : this.offersList;
+          // Set game id in each offers
+          offers.forEach((offer: any) => {
+            offer.gameId = game.id;
+            offer.copyToClipboard = false;
+
+            promises.push(this.setOfferStatus(offer));
+            this.offersGlobalList.push(offer);
+          });
+
+          this.offersGlobalList.sort((a, b) => {
+            return a.price - b.price;
+          });
+
+          Promise.all(promises).then(() => {
+            this.filterByStatus(this.offersGlobalList, true);
+            this.isLoading = false;
+          });
+
+          this.filterByStatus(this.offersGlobalList, true);
+        });
       });
     }
   }
 
   /**
-   * Display an offer in a modal.
-   * @param {string} gameId: game id.
-   * @param {string} offerId: offer id.
+   * Update result on change value of filters.
    */
-  public displayOffer(gameId: string, offerId: string) {
-      console.log("Open offer ID " + offerId);
+  public updateResult() {
+    if(!this.selectedName) {
+      this.offersListFiltered = [];
+    }
+
+    if (this.selectedGame && this.selectedName) {
+      this.offersListFiltered = [];
+      this.isLoading = true;
+
+      this.offersService.getOffersByGameAndFilterCloud(this.selectedGame.id, this.selectedName, parseInt(this.selectedPrice), this.selectedServers).take(1).subscribe((res) => {
+        this.offersList = res.data;
+        const promises = [];
+
+        // Set the status in first to run promises asynchronous
+        this.offersList.forEach((offer) => {
+          promises.push(this.setOfferStatus(offer));
+        });
+
+        this.offersList.forEach((offer) => offer.copyToClipboard = false);
+
+        // We filter only when all status are set
+        Promise.all(promises).then(() => {
+          this.filterByStatus(this.offersList, false);
+          this.isLoading = false;
+        });
+      });
+    }
+  }
+
+  /**
+   * Filter by name and status locally to avoid request
+   * @param {Array<{}>} offersList
+   * @param {boolean} globalList
+   */
+  public filterByStatus(offersList: Array<any>, globalList: boolean) {
+    const result = [];
+
+    offersList.forEach((offer) => {
+      // If not status in filter, we don't filter
+      if(!this.selectedStatus || !offer.status) {
+        result.push(offer);
+      } else if (offer.status === this.selectedStatus) {
+        result.push(offer);
+      }
+    });
+
+    // Set the list as filtered
+    if(globalList) {
+      this.offersGlobalFilteredList = result;
+    } else {
+      this.offersListFiltered = result;
+    }
+  }
+
+  /**********************************
+   *             OFFERS             *
+   **********************************/
+
+  /**
+   * Set async status user of offer.
+   * @param offer
+   * @returns {Promise<void>}
+   */
+  public setOfferStatus(offer: any) {
+    return this.usersService.getUser(offer.user).then((user) => {
+      offer.status = (user.data() as User).status;
+    });
+  }
+
+  /**
+   * Enable / Disable copy whisper mode.
+   * @param offer
+   * @param {boolean} copyOn
+   */
+  public setOfferCopyMode(offer: any, copyOn: boolean) {
+    let game;
+
+    // Choose between selected game or getting game from id for global list
+    if(!this.selectedGame) {
+      game = this.gamesList.find((g) => { return g.id === offer.gameId; });
+    } else {
+      game = this.selectedGame;
+    }
+
+    // If not set, queried for getting whisp
+    if(copyOn && !offer.copyWhisp) {
+      this.usersService.getUser(offer.user).then((user) => {
+        // Always in english, for communication between players
+        offer.copyWhisp = `/w ${(user.data() as User).usernames[game.id]} `
+                        + `Hello ! I'm interested about ${offer.name} for ${offer.price} ${game.currency}.`;
+      });
+    }
+
+    offer.copyToClipboard = copyOn;
+  }
+
+  /**
+   * Display an offer in a modal.
+   * @param {string} offer: the offer.
+   */
+  public displayOffer(offer: any) {
+    this.modalController.create(ModalDisplayOfferComponent, {
+      offer: offer,
+      game: this.selectedGame ? this.selectedGame : this.gamesList.find((g) => {
+        return g.id === offer.gameId;
+      })
+    }).present();
   }
 
   /**
@@ -170,9 +346,32 @@ export class HomePage implements OnInit {
     this.modalController.create(ModalCreateOfferComponent, {game: this.selectedGame}).present();
   }
 
+  /**
+   * Delete an offer.
+   * @param {string} offerId
+   */
   public deleteOffer(offerId: string) {
-    this.offersService.deleteOffer(this.selectedGame.id, offerId);
+    this.alertController.create({
+      title: "Delete offer",
+      message: "Are you sure to delete your offer ?",
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+          },
+        },{
+          text: 'Delete',
+          handler: () => {
+            this.offersService.deleteOffer(this.selectedGame.id, offerId);
+          },
+        },]
+    }).present();
   }
+
+  /**********************************
+   *          MISCELANEOUS          *
+   **********************************/
 
   /**
    * Change the language.
@@ -185,9 +384,70 @@ export class HomePage implements OnInit {
    * Reset the chose game to go back home.
    */
   public resetGames() {
-    Utils.delay(500).then(() => {
+    this.utils.delay(500).then(() => {
       this.selectedGame = null;
+
       this.quickSearch = "";
+      this.selectedName = "";
+      this.selectedPrice = "0";
+      this.selectedServers = "";
+      this.selectedStatus = "";
+
+      this.offersList = [];
+      this.offersListFiltered = [];
+
+      this.offersGlobalSubs = [];
+      this.offersGlobalMap = new Map<string, Array<any>>();
+      this.offersGlobalList = [];
+      this.offersGlobalFilteredList = [];
+    });
+  }
+
+  /**********************************
+   *           TEST  DATA           *
+   **********************************/
+
+  public resetData() {
+    this.gamesList.forEach((game) => {
+      let randomString;
+
+      if(game.name === "Dofus")
+        randomString = ["Dofus Emeraude", "Dofus Turquoise", "Dofus Pourpre", "Dofus Ivoire", "Dofus Ebene", "Dofus Ocre"];
+
+      if(game.name === "Wakfu")
+        randomString = ["Rubilax", "Coiffe du tofu", "Boufcape Royale", "Rod Gerse", "L'Erréotype", "Le Hoshin"];
+
+      if(game.name === "Warframe")
+        randomString = ["Valkyr Prime Set", "Trinity Prime Set", "Nova Prime Set", "Nyx Prime Set", "Nekros Prime Neuroptics", "Riven Mod (Shotgun)"];
+
+      if(game.name === "World of Warcraft")
+        randomString = ["Aubastre Rapide", "Mécabécane", "Proto-Drake perdu dans le temps", "Sac en soie Shal'Dorei", "Illidan's twins", "Tome scellé"];
+
+      if(game.name === "Black Desert Online")
+        randomString = ["Kzarka Longsword", "Yuria Longsword of Temptation", "Kydict Amulet", "Ahon Kirus's Armor", "Velian Casual Clothes", "Jarette’s Armor"];
+
+      for(let i = 0; i < 200; i++) {
+        const offer = new Offer();
+
+        offer.name = randomString[i % randomString.length];
+        offer.desc = i % 2
+            ? `Description of ${offer.name}.`
+            : `Description of ${offer.name}. This is a longer description, to visualize what can happen if someone write this kind of description.`;
+
+        offer.server = game.servers.length ? game.servers[i % game.servers.length] : "";
+
+        offer.username = "Test Data";
+        offer.user = "xoBJ9ZD9tCdBxsktDXIJ9jYJ4kJ3";
+
+        offer.quantity = 1;
+        offer.price = game.name === "Dofus" || game.name === "Wakfu"
+            ? (i % 100) * 1000
+            : i % 100;
+
+        this.offersService.addOffer(game.id, offer);
+      }
+
+      console.log("Data created for" + game.name);
     });
   }
 }

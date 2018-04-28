@@ -13,29 +13,16 @@ page-home {
     float: left;
     height: 110px;
     background-color: #262626;
-    border-bottom: 10px solid #6a31a8;
-    border-left: 10px solid #6a31a8;
+    border-bottom: 10px solid map-get($colors, primary);
     background-image: linear-gradient(#9f9f9f 0%, #9f9f9f 3%, #262626 6%, #262626 50%, black 100%);
     z-index: 9999;
-  }
-
-  .inclined {
-    width: 0;
-    height: 60%;
-    position: fixed;
-    left: 19.35%;
-    top: 42%;
-    -webkit-transform: rotateZ(13deg);
-    transform: rotateZ(13deg);
-    border-right: 15px solid #6a31a8;
-    z-index: 999;
   }
 
   .header-md::after {
     content: none;
   }
 
-  .scroll-content {
+  & > ion-content > .scroll-content {
     overflow: hidden;
     margin-top: 35px !important;
   }
@@ -80,18 +67,29 @@ page-home {
     }
   }
 
+  .quick-search-submit {
+    width: 70%;
+    margin: 30px auto;
+  }
+
   .quick-search {
     .main-filters {
-      background-color: #681aa2;
+      background-color: map-get($colors, primary);
     }
   }
 
   .games {
-    height: 300px;
-    background-color: #681aa2;
+    background-color: map-get($colors, primary);
+
+    h2 {
+      height: 30%;
+    }
+
+    .game-scroll {
+      height: 70%;
+    }
 
     .game {
-      width: 25%;
       height: 150px;
       float: left;
       background-size: 80%;
@@ -103,7 +101,7 @@ page-home {
 
       &:hover {
         cursor: pointer;
-        background-size: 120%;
+        background-size: 95%;
         transition: background-size .2s ease-in;
 
         .overlay {
@@ -151,10 +149,10 @@ page-home {
     ion-row {
       border-bottom: 1px solid white;
       display: inline-block;
+      width: 100%;
 
-      &.line:hover {
+      &.content-row:hover {
         background-color: #484848;
-        cursor: pointer;
       }
 
       ion-col {
@@ -186,14 +184,24 @@ page-home {
         background-position: center;
       }
     }
+
+    .copy-text {
+      font-size: 1.3em;
+
+      input {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        color: white;
+      }
+    }
   }
 
   .add-offer {
     width: 110px;
     height: 50px;
     position: fixed;
-    top: 10%;
-    right: 5%;
+    top: 15%;
+    right: 1%;
     background-color: #262626;
     text-align: center;
     border-radius: 41px;
