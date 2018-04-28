@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
+import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 import { AngularFirestore } from "angularfire2/firestore";
 import { Unsubscribe } from "firebase/app";
 import { User } from "../domain/User";
-import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
-import {Observable} from "rxjs/Observable";
+import { Observable } from "rxjs/Observable";
 
 @Injectable()
 export class UsersService {

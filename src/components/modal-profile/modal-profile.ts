@@ -1,8 +1,8 @@
-import {Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavParams, ViewController } from "ionic-angular";
-import {UsersService} from "../../providers/users.provider";
-import {Utils} from "../../utils/Utils";
-import {Game} from "../../domain/Game";
+import { UsersService } from "../../providers/users.provider";
+import { Utils } from "../../utils/Utils";
+import { Game } from "../../domain/Game";
 
 @Component({
   selector: 'modal-profile',

@@ -3,7 +3,7 @@ import { Observable } from "rxjs/Observable";
 import "rxjs/add/operator/first";
 import { Injectable } from "@angular/core";
 import { Offer } from "../domain/Offer";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 
 @Injectable()
 export class OffersService {

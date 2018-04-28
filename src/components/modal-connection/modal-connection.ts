@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { OffersService } from "../../providers/offers.provider";
 import { UsersService } from "../../providers/users.provider";
-import { NavParams, ViewController } from "ionic-angular";
+import { ViewController } from "ionic-angular";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 /**

@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, ModalController, NavController } from 'ionic-angular';
 
 import { Observable } from "rxjs/Observable";
@@ -61,7 +61,6 @@ export class HomePage implements OnInit {
   private gamesObs: Observable<Game[]>;
   private gamesList: Game[];
   private subscriptions: Subscription[];
-  private resultSubscription: Subscription;
 
   /**********************************
    *    CONSTRUCTOR & ON-EVENTS     *
@@ -77,12 +76,11 @@ export class HomePage implements OnInit {
    * @param {OffersService} offersService
    * @param {UsersService} usersService
    * @param {Utils} utils
-   * @param {Renderer2} renderer
    */
   constructor(private navCtrl: NavController, private translateService: TranslateService,
               private modalController: ModalController, private alertController: AlertController,
               private gamesService: GamesService, private offersService: OffersService,
-              private usersService: UsersService, private utils: Utils, private renderer: Renderer2) {
+              private usersService: UsersService, private utils: Utils) {
     this.windowHeight = window.innerHeight;
 
     this.language = "en";
@@ -97,8 +95,6 @@ export class HomePage implements OnInit {
 
     this.offersList = [];
     this.offersListFiltered = [];
-
-    this.resultSubscription = null;
 
     this.offersGlobalSubs = [];
     this.offersGlobalMap = new Map<string, Array<any>>();
