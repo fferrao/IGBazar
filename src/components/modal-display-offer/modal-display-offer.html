@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">X</button>
+    </ion-buttons>
+    <ion-title>{{offer.name}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding [ngStyle]="{'background-color':  game.color}">
+  <ion-grid>
+    <ion-row align-items-center>
+      <ion-col col-9>
+        <p>{{offer.desc}}</p>
+      </ion-col>
+      <ion-col col-3>
+        <div class="img" [ngStyle]="{'background-image': offer.img ? 'url(' + offer.img + ')' : 'url(' + game.placeholder + ')'}"></div>
+      </ion-col>
+    </ion-row>
+    <ion-row align-items-center>
+      <ion-col col-6>
+        <span>{{'home.result.price' | translate}} : {{offer.price}} {{game.currency}}</span>
+      </ion-col>
+      <ion-col col-3>
+        <span>{{'home.result.quantity' | translate}} : {{offer.quantity}}</span>
+      </ion-col>
+    </ion-row>
+    <ion-row class="contact" align-items-center>
+      <ion-col col-2>
+        <span>{{'home.display.contact' | translate}} :</span>
+      </ion-col>
+    </ion-row>
+    <ion-row align-items-center>
+      <ion-col col-12>
+        <ion-input [readonly]="true" [(ngModel)]="whisp"></ion-input>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,5 +1,6 @@
 {
   "home": {
+    "loading": "Loading, please wait",
     "nav": {
       "signIn": "Sign in",
       "signOut": "Sign out"
@@ -7,13 +8,14 @@
     "search": {
       "title": "Make a quick search",
       "or": "OR",
-      "select": "Select a game !"
+      "select": "Pick a game !"
     },
     "filter": {
       "item": "Item name",
       "price": "Max price",
       "server": "Server",
-      "status": "Status"
+      "status": "Status",
+      "all": "All"
     },
     "result": {
       "noResult": "No results...",
@@ -30,9 +32,45 @@
       "title": "Title",
       "desc": "Description"
     },
+    "display": {
+      "contact": "Contact",
+      "report": "Report"
+    },
+    "connection": {
+      "title": "Sign Up / Sign In",
+      "login": "E-Mail",
+      "pseudo": "Username",
+      "password": "Password",
+      "passwordNew": "Type your new password",
+      "passwordRepeat": "Repeat your password",
+      "signin": "Sign in with account",
+      "signup": "Create a new account",
+      "submit": {
+        "signin": "Sign In",
+        "signup": "Sign Up",
+        "gotoSignin": "Go to sign in",
+        "gotoSignup": "Go to sign up",
+        "update": "Update username",
+        "updatePassword": "Change password",
+        "updateNames": "Update names"
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "infos": "Informations",
+      "histo": "Historic",
+      "selling": "Ordered items",
+      "selled": "Selled items",
+      "names": "Names",
+      "manage": "Manage your infos",
+      "manageNames": "Manage your names"
+    },
     "footer": {
       "language": "Language",
       "links": "Links"
+    },
+    "toast": {
+      "accountCreated": "Account successfully created"
     }
   }
 }

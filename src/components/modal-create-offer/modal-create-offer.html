@@ -27,7 +27,7 @@
           </ion-item>
         </ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row  *ngIf="selectedGame.servers.length === 0">
         <ion-col col-6>
           <ion-item>
             <ion-label floating>{{'home.result.price' | translate}}</ion-label>
@@ -41,8 +41,32 @@
           </ion-item>
         </ion-col>
       </ion-row>
-    </ion-grid>
+      <ion-row  *ngIf="selectedGame.servers.length !== 0">
+        <ion-col col-4>
+          <ion-item>
+            <ion-label floating>{{'home.result.price' | translate}}</ion-label>
+            <ion-input type="text" formControlName="price"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col col-4>
+          <ion-item>
+            <ion-label floating>{{'home.result.quantity' | translate}}</ion-label>
+            <ion-input type="text" formControlName="quantity"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col col-4>
+          <ion-item>
+            <ion-label color="light" floating>{{'home.filter.server' | translate}}</ion-label>
+            <ion-select formControlName="server">
+              <ion-option *ngFor="let serv of selectedGame.servers" [value]="serv">{{serv}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
 
-    <button ion-button (click)="createOffer()">{{'home.new.offer' | translate}}</button>
+      <ion-row>
+        <button color="dark" ion-button (click)="createOffer()">{{'home.new.offer' | translate}}</button>
+      </ion-row>
+    </ion-grid>
   </form>
 </ion-content>

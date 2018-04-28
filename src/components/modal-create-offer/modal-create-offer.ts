@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { NavParams, ViewController } from "ionic-angular";
 import { Game } from "../../domain/Game";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import {OffersService} from "../../providers/offers.provider";
-import {Offer} from "../../domain/Offer";
-import {UsersService} from "../../providers/users.provider";
+import { OffersService } from "../../providers/offers.provider";
+import { Offer } from "../../domain/Offer";
+import { UsersService } from "../../providers/users.provider";
 
 @Component({
   selector: 'modal-create-offer',
@@ -30,9 +30,10 @@ export class ModalCreateOfferComponent {
 
     this.form = this.formBuilder.group({
       name: ['', Validators.required],
-      desc: ['', Validators.required],
+      desc: [''],
       price: ['', Validators.required],
       quantity: ['', Validators.required],
+      server: this.selectedGame.servers.length ? ['', Validators.required] : [''],
     });
   }
 
@@ -46,8 +47,10 @@ export class ModalCreateOfferComponent {
 
       offer.name = this.form.value.name;
       offer.desc = this.form.value.desc;
-      offer.price = this.form.value.price;
+      offer.price = parseInt(this.form.value.price);
       offer.quantity = this.form.value.quantity;
+
+      offer.server = this.form.value.server;
 
       offer.username = this.usersService.getName();
       offer.user = this.usersService.getUid();

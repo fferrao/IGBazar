@@ -1,0 +1,110 @@
+<ion-header>
+  <ion-navbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-5>
+          <ion-title>{{'home.profile.title' | translate}}</ion-title>
+        </ion-col>
+        <ion-col col-7>
+          <ion-segment [(ngModel)]="selectedTab">
+            <ion-segment-button value="infos" (ionSelect)="selectInfos()">
+              {{'home.profile.infos' | translate}}
+            </ion-segment-button>
+            <ion-segment-button value="names" (ionSelect)="selectHisto()">
+              {{'home.profile.names' | translate}}
+            </ion-segment-button>
+            <ion-segment-button value="histo" (ionSelect)="selectHisto()">
+              {{'home.profile.histo' | translate}}
+            </ion-segment-button>
+          </ion-segment>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <!-- INFORMATIONS -->
+  <div class="content" *ngIf="selectedTab === 'infos'">
+    <h3>{{'home.profile.manage' | translate}}</h3>
+    <ion-grid>
+      <ion-row align-items-end>
+        <ion-col col-6>
+          <ion-item>
+            <ion-label floating>{{'home.connection.pseudo' | translate}}</ion-label>
+            <ion-input type="text" [(ngModel)]="newUsername"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col col-6>
+          <button class="full-width" (click)="changePseudo()" ion-button>{{'home.connection.submit.update' | translate}}</button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.connection.login' | translate}}</ion-label>
+            <ion-input disabled type="email" [(ngModel)]="email"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.connection.passwordNew' | translate}}</ion-label>
+            <ion-input type="password" [(ngModel)]="newPassword"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.connection.passwordRepeat' | translate}}</ion-label>
+            <ion-input type="password" [(ngModel)]="repeatPassword"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <button class="full-width full-height" (click)="changePassword()" ion-button>{{'home.connection.submit.updatePassword' | translate}}</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- NAMES -->
+  <div class="content" *ngIf="selectedTab === 'names'">
+    <h3>{{'home.profile.manageNames' | translate}}</h3>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6 *ngFor="let game of gamesList">
+          <ion-item>
+            <ion-label floating>{{game.name}}</ion-label>
+            <ion-input type="text" [(ngModel)]="names[game.id]"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <button class="full-width full-height" (click)="changeUsernames()" ion-button>{{'home.connection.submit.updateNames' | translate}}</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- HISTORIC -->
+  <div class="content" *ngIf="selectedTab === 'histo'">
+    <h3>{{'home.profile.histo' | translate}}</h3>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6>
+          <h4>{{'home.profile.selling' | translate}}</h4>
+
+        </ion-col>
+        <ion-col col-6>
+          <h4>{{'home.profile.selled' | translate}}</h4>
+
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

@@ -1,0 +1,18 @@
+modal-profile {
+  ion-title .toolbar-title-md, h3, input, .text-input-md, .label-md {
+    color: white !important;
+  }
+
+  .title.title-md {
+    width: 100%;
+  }
+
+  .segment-md .segment-button {
+    line-height: 2em;
+    height: 2.5em;
+  }
+
+  .scroll-content {
+    background-color: map-get($colors, primary);
+  }
+}

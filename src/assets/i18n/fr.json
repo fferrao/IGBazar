@@ -1,5 +1,6 @@
 {
   "home": {
+    "loading": "Chargement, veuillez patienter",
     "nav": {
       "signIn": "Se connecter",
       "signOut": "Déconnection"
@@ -13,7 +14,8 @@
       "item": "Objet",
       "price": "Prix max",
       "server": "Serveur",
-      "status": "Statut"
+      "status": "Statut",
+      "all": "Tous"
     },
     "result": {
       "noResult": "Aucun résultat...",
@@ -21,14 +23,55 @@
       "player": "Joueur",
       "status": "Statut",
       "price": "Prix",
-      "actions": "Actions"
+      "actions": "Actions",
+      "quantity": "Quantité"
     },
     "new": {
-      "offer": "Ajouter offre"
+      "offer": "Ajouter offre",
+      "create": "Créer",
+      "title": "Titre",
+      "desc": "Description"
+    },
+    "display": {
+      "contact": "Contact",
+      "report": "Report"
+    },
+    "connection": {
+      "title": "S'inscrire / Se connecter",
+      "login": "E-Mail",
+      "pseudo": "Login",
+      "password": "Mot de passe",
+      "passwordNew": "Tapez votre mot de passe",
+      "passwordRepeat": "Repeat your password",
+      "signin": "Se connecter",
+      "signup": "Créer un compte",
+      "submit": {
+        "signin": "Connexion",
+        "signup": "Inscription",
+        "gotoSignin": "S'inscrire",
+        "gotoSignup": "Se connecter",
+        "update": "Mettre à jour pseudo",
+        "updatePassword": "Changer mot de passe",
+        "updateNames": "Mettre à jour les noms"
+      }
+    },
+    "profile": {
+      "title": "Profil",
+      "infos": "Informations",
+      "histo": "Historique",
+      "selling": "Objets en vente",
+      "selled": "Objets vendu",
+      "names": "Noms",
+      "manage": "Gestion des infos",
+      "manageNames": "Gestion des noms"
     },
     "footer": {
       "language": "Langue",
       "links": "Liens"
+    },
+    "toast": {
+      "accountCreated": "Compte créer avec succès"
     }
   }
 }
+

@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">X</button>
+    </ion-buttons>
+    <ion-title>{{'home.connection.title' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h3 *ngIf="isSignIn">{{'home.connection.signin' | translate}}</h3>
+  <form *ngIf="isSignIn" [formGroup]="signin">
+    <ion-grid>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.connection.login' | translate}}</ion-label>
+            <ion-input type="email" formControlName="email"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.connection.password' | translate}}</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-9>
+          <button class="full-width" (click)="signIn()" ion-button>{{'home.connection.submit.signin' | translate}}</button>
+        </ion-col>
+        <ion-col col-3>
+          <button class="full-width" (click)="goToSignIn(false)" ion-button>{{'home.connection.submit.gotoSignup' | translate}}</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <h3 *ngIf="!isSignIn">{{'home.connection.signup' | translate}}</h3>
+  <form *ngIf="!isSignIn" [formGroup]="signup">
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6>
+          <ion-item>
+            <ion-label floating>{{'home.connection.pseudo' | translate}}</ion-label>
+            <ion-input type="text" formControlName="pseudo"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.connection.login' | translate}}</ion-label>
+            <ion-input type="email" formControlName="email"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label floating>{{'home.connection.password' | translate}}</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-9>
+          <button class="full-width" (click)="signUp()" ion-button>{{'home.connection.submit.signup' | translate}}</button>
+        </ion-col>
+        <ion-col col-3>
+          <button class="full-width" (click)="goToSignIn(true)" ion-button>{{'home.connection.submit.gotoSignin' | translate}}</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
