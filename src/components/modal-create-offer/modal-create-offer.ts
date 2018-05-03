@@ -1,20 +1,22 @@
-import { Component } from '@angular/core';
-import { NavParams, ViewController } from "ionic-angular";
-import { Game } from "../../domain/Game";
+import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { NavParams, ViewController } from "ionic-angular";
+
 import { OffersService } from "../../providers/offers.provider";
-import { Offer } from "../../domain/Offer";
 import { UsersService } from "../../providers/users.provider";
 
+import { Game } from "../../domain/Game";
+import { Offer } from "../../domain/Offer";
+
 @Component({
-  selector: 'modal-create-offer',
-  templateUrl: 'modal-create-offer.html'
+  selector: "modal-create-offer",
+  templateUrl: "modal-create-offer.html",
 })
 export class ModalCreateOfferComponent {
 
   private selectedGame: Game;
 
-  private form : FormGroup;
+  private form: FormGroup;
 
   /**
    * Constructor of modal.
@@ -26,14 +28,14 @@ export class ModalCreateOfferComponent {
    */
   constructor(private viewCtrl: ViewController, private navParams: NavParams, private formBuilder: FormBuilder,
               private offersService: OffersService, private usersService: UsersService) {
-    this.selectedGame = navParams.get("game");
+    this.selectedGame = this.navParams.get("game");
 
     this.form = this.formBuilder.group({
-      name: ['', Validators.required],
-      desc: [''],
-      price: ['', Validators.required],
-      quantity: ['', Validators.required],
-      server: this.selectedGame.servers.length ? ['', Validators.required] : [''],
+      desc: [""],
+      name: ["", Validators.required],
+      price: ["", Validators.required],
+      quantity: ["", Validators.required],
+      server: this.selectedGame.servers.length ? ["", Validators.required] : [""],
     });
   }
 
@@ -42,12 +44,12 @@ export class ModalCreateOfferComponent {
    */
   public createOffer() {
     // If form valid
-    if(this.form.valid) {
+    if (this.form.valid) {
       const offer = new Offer();
 
       offer.name = this.form.value.name;
       offer.desc = this.form.value.desc;
-      offer.price = parseInt(this.form.value.price);
+      offer.price = parseInt(this.form.value.price, 10);
       offer.quantity = this.form.value.quantity;
 
       offer.server = this.form.value.server;

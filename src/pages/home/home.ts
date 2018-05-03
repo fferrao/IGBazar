@@ -1,35 +1,35 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertController, ModalController, NavController } from 'ionic-angular';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { AlertController, ModalController, NavController } from "ionic-angular";
 
 import { Observable } from "rxjs/Observable";
 import { Subscription } from "rxjs/Subscription";
 
+import { TranslateService } from "@ngx-translate/core";
 import { GamesService } from "../../providers/games.provider";
 import { OffersService } from "../../providers/offers.provider";
 import { UsersService } from "../../providers/users.provider";
-import { TranslateService } from "@ngx-translate/core";
 
-import { ModalCreateOfferComponent } from "../../components/modal-create-offer/modal-create-offer";
 import { ModalConnectionComponent } from "../../components/modal-connection/modal-connection";
-import { ModalProfileComponent } from "../../components/modal-profile/modal-profile";
+import { ModalCreateOfferComponent } from "../../components/modal-create-offer/modal-create-offer";
 import { ModalDisplayOfferComponent } from "../../components/modal-display-offer/modal-display-offer";
+import { ModalProfileComponent } from "../../components/modal-profile/modal-profile";
 
 import { Game } from "../../domain/Game";
-import { User } from "../../domain/User";
+import { Offer } from "../../domain/Offer";
+import { IUser } from "../../domain/User";
 
 import { Utils } from "../../utils/Utils";
-import { Offer } from "../../domain/Offer";
 
-import 'rxjs/add/operator/take';
+import "rxjs/add/operator/take";
 
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: "page-home",
+  templateUrl: "home.html",
 })
 export class HomePage implements OnInit {
 
-  @ViewChild('globalList') globalList;
-  @ViewChild('nameInput') nameInput;
+  @ViewChild("globalList") public globalList;
+  @ViewChild("nameInput") public nameInput;
 
   // Global usefull vars
   private windowHeight: number;
@@ -48,14 +48,14 @@ export class HomePage implements OnInit {
   private selectedStatus: string;
 
   // Result list of offers
-  private offersList: Array<any>;
-  private offersListFiltered: Array<any>;
+  private offersList: any[];
+  private offersListFiltered: any[];
 
   // Result of global list
-  private offersGlobalSubs: Array<Subscription>;
-  private offersGlobalMap: Map<string, Array<any>>;
-  private offersGlobalList: Array<any>;
-  private offersGlobalFilteredList: Array<any>;
+  private offersGlobalSubs: Subscription[];
+  private offersGlobalMap: Map<string, any[]>;
+  private offersGlobalList: any[];
+  private offersGlobalFilteredList: any[];
 
   // Observable and Subscriptions
   private gamesObs: Observable<Game[]>;
@@ -97,7 +97,7 @@ export class HomePage implements OnInit {
     this.offersListFiltered = [];
 
     this.offersGlobalSubs = [];
-    this.offersGlobalMap = new Map<string, Array<any>>();
+    this.offersGlobalMap = new Map<string, any[]>();
     this.offersGlobalList = [];
     this.offersGlobalFilteredList = [];
   }
@@ -159,7 +159,7 @@ export class HomePage implements OnInit {
   public search() {
     // Timeout needed by ionic before focus
     setTimeout(() => {
-      if(this.nameInput) {
+      if (this.nameInput) {
         this.selectedName = this.quickSearch;
         this.nameInput.setFocus();
         this.globalList.nativeElement.scrollIntoView();
@@ -183,7 +183,7 @@ export class HomePage implements OnInit {
   public updateGlobalResult() {
     const promises = [];
 
-    if(!this.selectedName) {
+    if (!this.selectedName) {
       this.offersGlobalFilteredList = [];
     } else {
       this.offersGlobalList = [];
@@ -192,7 +192,14 @@ export class HomePage implements OnInit {
 
       // Separate offers inside a map and merge it at the end
       this.gamesList.forEach((game) => {
-        this.offersService.getOffersByGameAndFilterCloud(game.id, this.selectedName, parseInt(this.selectedPrice), this.selectedServers).take(1).subscribe((res) => {
+
+        // For each games we query the database
+        this.offersService.getOffersByGameAndFilterCloud(
+            game.id,
+            this.selectedName,
+            parseInt(this.selectedPrice, 10),
+            this.selectedServers,
+        ).take(1).subscribe((res) => {
           const offers = res.data;
 
           // Set link between game and offers
@@ -226,7 +233,7 @@ export class HomePage implements OnInit {
    * Update result on change value of filters.
    */
   public updateResult() {
-    if(!this.selectedName) {
+    if (!this.selectedName) {
       this.offersListFiltered = [];
     }
 
@@ -234,7 +241,13 @@ export class HomePage implements OnInit {
       this.offersListFiltered = [];
       this.isLoading = true;
 
-      this.offersService.getOffersByGameAndFilterCloud(this.selectedGame.id, this.selectedName, parseInt(this.selectedPrice), this.selectedServers).take(1).subscribe((res) => {
+      // Query the database
+      this.offersService.getOffersByGameAndFilterCloud(
+          this.selectedGame.id,
+          this.selectedName,
+          parseInt(this.selectedPrice, 10),
+          this.selectedServers,
+      ).take(1).subscribe((res) => {
         this.offersList = res.data;
         const promises = [];
 
@@ -259,12 +272,12 @@ export class HomePage implements OnInit {
    * @param {Array<{}>} offersList
    * @param {boolean} globalList
    */
-  public filterByStatus(offersList: Array<any>, globalList: boolean) {
+  public filterByStatus(offersList: any[], globalList: boolean) {
     const result = [];
 
     offersList.forEach((offer) => {
       // If not status in filter, we don't filter
-      if(!this.selectedStatus || !offer.status) {
+      if (!this.selectedStatus || !offer.status) {
         result.push(offer);
       } else if (offer.status === this.selectedStatus) {
         result.push(offer);
@@ -272,7 +285,7 @@ export class HomePage implements OnInit {
     });
 
     // Set the list as filtered
-    if(globalList) {
+    if (globalList) {
       this.offersGlobalFilteredList = result;
     } else {
       this.offersListFiltered = result;
@@ -290,7 +303,7 @@ export class HomePage implements OnInit {
    */
   public setOfferStatus(offer: any) {
     return this.usersService.getUser(offer.user).then((user) => {
-      offer.status = (user.data() as User).status;
+      offer.status = (user.data() as IUser).status;
     });
   }
 
@@ -303,17 +316,17 @@ export class HomePage implements OnInit {
     let game;
 
     // Choose between selected game or getting game from id for global list
-    if(!this.selectedGame) {
-      game = this.gamesList.find((g) => { return g.id === offer.gameId; });
+    if (!this.selectedGame) {
+      game = this.gamesList.find((g) => g.id === offer.gameId);
     } else {
       game = this.selectedGame;
     }
 
     // If not set, queried for getting whisp
-    if(copyOn && !offer.copyWhisp) {
+    if (copyOn && !offer.copyWhisp) {
       this.usersService.getUser(offer.user).then((user) => {
         // Always in english, for communication between players
-        offer.copyWhisp = `/w ${(user.data() as User).usernames[game.id]} `
+        offer.copyWhisp = `/w ${(user.data() as IUser).usernames[game.id]} `
                         + `Hello ! I'm interested about ${offer.name} for ${offer.price} ${game.currency}.`;
       });
     }
@@ -323,14 +336,14 @@ export class HomePage implements OnInit {
 
   /**
    * Display an offer in a modal.
-   * @param {string} offer: the offer.
+   * @param {string} off: the offer.
    */
-  public displayOffer(offer: any) {
+  public displayOffer(off: any) {
     this.modalController.create(ModalDisplayOfferComponent, {
-      offer: offer,
       game: this.selectedGame ? this.selectedGame : this.gamesList.find((g) => {
-        return g.id === offer.gameId;
-      })
+        return g.id === off.gameId;
+      }),
+      offer: off,
     }).present();
   }
 
@@ -348,20 +361,19 @@ export class HomePage implements OnInit {
    */
   public deleteOffer(offerId: string) {
     this.alertController.create({
-      title: "Delete offer",
-      message: "Are you sure to delete your offer ?",
       buttons: [
         {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-          },
-        },{
-          text: 'Delete',
+          role: "cancel",
+          text: "Cancel",
+        }, {
           handler: () => {
             this.offersService.deleteOffer(this.selectedGame.id, offerId);
           },
-        },]
+          text: "Delete",
+        },
+      ],
+      message: "Are you sure to delete your offer ?",
+      title: "Delete offer",
     }).present();
   }
 
@@ -393,7 +405,7 @@ export class HomePage implements OnInit {
       this.offersListFiltered = [];
 
       this.offersGlobalSubs = [];
-      this.offersGlobalMap = new Map<string, Array<any>>();
+      this.offersGlobalMap = new Map<string, any[]>();
       this.offersGlobalList = [];
       this.offersGlobalFilteredList = [];
     });
@@ -407,28 +419,44 @@ export class HomePage implements OnInit {
     this.gamesList.forEach((game) => {
       let randomString;
 
-      if(game.name === "Dofus")
-        randomString = ["Dofus Emeraude", "Dofus Turquoise", "Dofus Pourpre", "Dofus Ivoire", "Dofus Ebene", "Dofus Ocre"];
+      if (game.name === "Dofus") {
+        randomString = ["Dofus Emeraude", "Dofus Turquoise",
+          "Dofus Pourpre", "Dofus Ivoire",
+          "Dofus Ebene", "Dofus Ocre"];
+      }
 
-      if(game.name === "Wakfu")
-        randomString = ["Rubilax", "Coiffe du tofu", "Boufcape Royale", "Rod Gerse", "L'Erréotype", "Le Hoshin"];
+      if (game.name === "Wakfu") {
+        randomString = ["Rubilax", "Coiffe du tofu",
+          "Boufcape Royale", "Rod Gerse",
+          "L'Erréotype", "Le Hoshin"];
+      }
 
-      if(game.name === "Warframe")
-        randomString = ["Valkyr Prime Set", "Trinity Prime Set", "Nova Prime Set", "Nyx Prime Set", "Nekros Prime Neuroptics", "Riven Mod (Shotgun)"];
+      if (game.name === "Warframe") {
+        randomString = ["Valkyr Prime Set", "Trinity Prime Set",
+          "Nova Prime Set", "Nyx Prime Set",
+          "Nekros Prime Neuroptics", "Riven Mod (Shotgun)"];
+      }
 
-      if(game.name === "World of Warcraft")
-        randomString = ["Aubastre Rapide", "Mécabécane", "Proto-Drake perdu dans le temps", "Sac en soie Shal'Dorei", "Illidan's twins", "Tome scellé"];
+      if (game.name === "World of Warcraft") {
+        randomString = ["Aubastre Rapide", "Mécabécane",
+          "Proto-Drake perdu dans le temps", "Sac en soie Shal'Dorei",
+          "Illidan's twins", "Tome scellé"];
+      }
 
-      if(game.name === "Black Desert Online")
-        randomString = ["Kzarka Longsword", "Yuria Longsword of Temptation", "Kydict Amulet", "Ahon Kirus's Armor", "Velian Casual Clothes", "Jarette’s Armor"];
+      if (game.name === "Black Desert Online") {
+        randomString = ["Kzarka Longsword", "Yuria Longsword of Temptation",
+          "Kydict Amulet", "Ahon Kirus's Armor",
+          "Velian Casual Clothes", "Jarette’s Armor"];
+      }
 
-      for(let i = 0; i < 200; i++) {
+      for (let i = 0; i < 200; i++) {
         const offer = new Offer();
 
         offer.name = randomString[i % randomString.length];
         offer.desc = i % 2
             ? `Description of ${offer.name}.`
-            : `Description of ${offer.name}. This is a longer description, to visualize what can happen if someone write this kind of description.`;
+            : `Description of ${offer.name}. This is a longer description`
+              + `, to visualize what can happen if someone write this kind of description.`;
 
         offer.server = game.servers.length ? game.servers[i % game.servers.length] : "";
 
@@ -442,8 +470,6 @@ export class HomePage implements OnInit {
 
         this.offersService.addOffer(game.id, offer);
       }
-
-      console.log("Data created for" + game.name);
     });
   }
 }

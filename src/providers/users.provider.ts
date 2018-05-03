@@ -1,16 +1,19 @@
-import { Injectable } from '@angular/core';
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
-import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
+import { Injectable } from "@angular/core";
+
+import { AngularFireAuth } from "angularfire2/auth";
 import { AngularFirestore } from "angularfire2/firestore";
-import { Unsubscribe } from "firebase/app";
-import { User } from "../domain/User";
+import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 import { Observable } from "rxjs/Observable";
+
+import * as firebase from "firebase/app";
+import { Unsubscribe } from "firebase/app";
+
+import { IUser } from "../domain/User";
 
 @Injectable()
 export class UsersService {
 
-  public user: User;
+  public user: IUser;
   public isLogged: boolean;
   public onAuthUnsubscribe: Unsubscribe;
 
@@ -27,7 +30,7 @@ export class UsersService {
     this.onAuthUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.getUser(user.uid).then((rep) => {
-          this.user = rep.data() as User;
+          this.user = rep.data() as IUser;
           this.isLogged = true;
         });
 
@@ -39,20 +42,20 @@ export class UsersService {
 
   /**
    * Create a new account.
-   * @param {string} email
+   * @param {string} mail
    * @param {string} password
    * @param {string} pseudo
    * @returns {Promise<void>}
    */
-  public signup(email: string, password: string, pseudo: string): Promise<void> {
+  public signup(mail: string, password: string, pseudo: string): Promise<void> {
     return this.afAuth.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-      return this.afAuth.auth.createUserWithEmailAndPassword(email, password).then((user) => {
-        return this.addUser(email, user, pseudo).then(() => {
+      return this.afAuth.auth.createUserWithEmailAndPassword(mail, password).then((user) => {
+        return this.addUser(mail, user, pseudo).then(() => {
           this.user = {
-            uid: user.uid,
-            status: "Online",
             displayName: pseudo,
-            email: email,
+            email: mail,
+            status: "Online",
+            uid: user.uid,
             usernames: {},
           };
 
@@ -74,9 +77,9 @@ export class UsersService {
    */
   public login(email: string, password: string): Promise<any> {
     return this.afAuth.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-      return this.afAuth.auth.signInWithEmailAndPassword(email, password).then((rep) => {
-        this.getUser(rep.uid).then((rep) => {
-          this.user = rep.data() as User;
+      return this.afAuth.auth.signInWithEmailAndPassword(email, password).then((user) => {
+        this.getUser(user.uid).then((rep) => {
+          this.user = rep.data() as IUser;
           this.updateStatus(this.getUid(), "Online").then(() => {
             this.refresh();
           });
@@ -89,7 +92,7 @@ export class UsersService {
 
   /**
    * Log out from the app.
-   * @returns {Promise<>}
+   * @returns {Promise<{}>}
    */
   public logout(): Promise<any> {
     return this.afAuth.auth.signOut().then(() => {
@@ -104,16 +107,16 @@ export class UsersService {
 
   /**
    * Create a new User after sign up.
-   * @param {string} email
+   * @param {string} mail
    * @param {User} user
    * @param {string} pseudo
-   * @returns {Promise<any>}
+   * @returns {Promise<void>}
    */
-  public addUser(email: string, user: User, pseudo: string): Promise<void> {
-    return this.firestore.collection<User>("users").doc(user.uid).set({
-      uid: user.uid,
+  public addUser(mail: string, user: IUser, pseudo: string): Promise<void> {
+    return this.firestore.collection<IUser>("users").doc(user.uid).set({
       displayName: pseudo,
-      email: email,
+      email: mail,
+      uid: user.uid,
       usernames: {},
     });
   }
@@ -124,7 +127,7 @@ export class UsersService {
    * @returns {Promise<DocumentSnapshot>}
    */
   public getUser(uid: string): Promise<DocumentSnapshot> {
-    return this.firestore.collection<User>("users").doc(uid).ref.get();
+    return this.firestore.collection<IUser>("users").doc(uid).ref.get();
   }
 
   /**
@@ -133,7 +136,7 @@ export class UsersService {
    * @returns {Promise<DocumentSnapshot>}
    */
   public getUserObservable(uid: string): Observable<{}> {
-    return this.firestore.collection<User>("users").doc(uid).valueChanges();
+    return this.firestore.collection<IUser>("users").doc(uid).valueChanges();
   }
 
   /**
@@ -143,7 +146,7 @@ export class UsersService {
    * @returns {Promise<{}>}
    */
   public updateUsername(uid: string, username: string): Promise<any> {
-    return this.firestore.collection<User>("users").doc(uid).update({displayName: username}).then(() => {
+    return this.firestore.collection<IUser>("users").doc(uid).update({displayName: username}).then(() => {
       this.user.displayName = username;
     });
   }
@@ -155,7 +158,7 @@ export class UsersService {
    * @returns {Promise<{}>}
    */
   public updateUsernames(uid: string, usernames: {}): Promise<any> {
-    return this.firestore.collection<User>("users").doc(uid).update({usernames: usernames}).then(() => {
+    return this.firestore.collection<IUser>("users").doc(uid).update({usernames}).then(() => {
       this.user.usernames = usernames;
     });
   }
@@ -177,7 +180,7 @@ export class UsersService {
    * @returns {Promise<void>}
    */
   public updateStatus(uid: string, status: string): Promise<void> {
-    return this.firestore.collection<User>("users").doc(uid).update({status: status});
+    return this.firestore.collection<IUser>("users").doc(uid).update({status});
   }
 
   /**

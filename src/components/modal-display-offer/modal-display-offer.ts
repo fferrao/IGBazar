@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 import { NavParams, ViewController } from "ionic-angular";
 
 import { Game } from "../../domain/Game";
-import { User } from "../../domain/User";
+import { IUser } from "../../domain/User";
 
 import { UsersService } from "../../providers/users.provider";
 
 @Component({
-  selector: 'modal-display-offer',
-  templateUrl: 'modal-display-offer.html'
+  selector: "modal-display-offer",
+  templateUrl: "modal-display-offer.html",
 })
 export class ModalDisplayOfferComponent {
 
@@ -31,7 +31,8 @@ export class ModalDisplayOfferComponent {
     this.placeholder = "https://icons8.com/icon/set/placeholder";
 
     this.usersService.getUser(this.offer.user).then((user) => {
-      this.whisp = `/w ${(user.data() as User).usernames[this.game.id]} Hello ! I'm interested about ${this.offer.name} for ${this.offer.price} ${this.game.currency}.`;
+      this.whisp = `/w ${(user.data() as IUser).usernames[this.game.id]} `
+                    + `Hello ! I'm interested about ${this.offer.name} for ${this.offer.price} ${this.game.currency}.`;
     });
   }
 

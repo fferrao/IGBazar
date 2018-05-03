@@ -1,22 +1,26 @@
+/**
+ * Represents an Offer.
+ * Attributes public for easier manipulations.
+ */
 export class Offer {
-  id: string;
+  public id: string;
 
-  name: string;
-  desc: string;
-  infos: Array<string>;
-  img: string;
+  public name: string;
+  public desc: string;
+  public infos: string[];
+  public img: string;
 
-  price: number;
-  quantity: number;
+  public price: number;
+  public quantity: number;
 
-  country: string;
-  server: string;
+  public country: string;
+  public server: string;
 
-  user: string;
-  username: string;
+  public user: string;
+  public username: string;
 
-  status: string;
+  public status: string;
 
-  copyToClipboard: boolean;
-  copyWhisp: string;
+  public copyToClipboard: boolean;
+  public copyWhisp: string;
 }

@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 import { NavParams, ViewController } from "ionic-angular";
+
 import { UsersService } from "../../providers/users.provider";
 import { Utils } from "../../utils/Utils";
+
 import { Game } from "../../domain/Game";
 
 @Component({
-  selector: 'modal-profile',
-  templateUrl: 'modal-profile.html'
+  selector: "modal-profile",
+  templateUrl: "modal-profile.html",
 })
 export class ModalProfileComponent {
 
@@ -63,12 +65,12 @@ export class ModalProfileComponent {
    * Change username.
    */
   public changePseudo() {
-    if(this.username === this.newUsername) {
+    if (this.username === this.newUsername) {
       this.utils.info("Username identique au précédent");
       return;
     }
 
-    if(this.newUsername.length < 5) {
+    if (this.newUsername.length < 5) {
       this.utils.info("Username trop court : < 5");
       return;
     }
@@ -82,12 +84,12 @@ export class ModalProfileComponent {
    * Change password.
    */
   public changePassword() {
-    if(this.newPassword !== this.repeatPassword) {
+    if (this.newPassword !== this.repeatPassword) {
       this.utils.info("Les passwords sont différents");
       return;
     }
 
-    if(this.newPassword.length < 6) {
+    if (this.newPassword.length < 6) {
       this.utils.info("Password trop court : < 6");
       return;
     }

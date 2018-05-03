@@ -1,12 +1,16 @@
+/**
+ * Represents a game.
+ * Attributes public for easier manipulations.
+ */
 export class Game {
-  id: string;
-  name: string;
-  shortname: string;
+  public id: string;
+  public name: string;
+  public shortname: string;
 
-  currency: string;
+  public currency: string;
 
-  color: string;
-  logo: string;
-  placeholder: string;
-  servers: Array<string>;
+  public color: string;
+  public logo: string;
+  public placeholder: string;
+  public servers: string[];
 }

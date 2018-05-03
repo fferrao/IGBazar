@@ -1,10 +1,22 @@
 {
   "indexes": [{
     "collectionId": "offers",
-      "fields": [
-        { "fieldPath": "price", "mode": "ASCENDING" },
-        { "fieldPath": "name", "mode": "ASCENDING" },
-        { "fieldPath": "server", "mode": "ASCENDING" },
-      ]
+    "fields": [
+      { "fieldPath": "price", "mode": "ASCENDING" },
+      { "fieldPath": "name", "mode": "ASCENDING" },
+      { "fieldPath": "server", "mode": "ASCENDING" }
+    ]
+  }, {
+    "collectionId": "offers",
+    "fields": [
+      { "fieldPath": "price", "mode": "ASCENDING" },
+      { "fieldPath": "server", "mode": "ASCENDING" }
+    ]
+  }, {
+    "collectionId": "offers",
+    "fields": [
+      { "fieldPath": "server", "mode": "ASCENDING" },
+      { "fieldPath": "price", "mode": "ASCENDING" }
+    ]
   }]
 }

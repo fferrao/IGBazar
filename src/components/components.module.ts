@@ -1,17 +1,23 @@
-import { NgModule } from '@angular/core';
-import { ModalCreateOfferComponent } from './modal-create-offer/modal-create-offer';
-import { ModalConnectionComponent } from './modal-connection/modal-connection';
-import { ModalProfileComponent } from './modal-profile/modal-profile';
-import { ModalDisplayOfferComponent } from './modal-display-offer/modal-display-offer';
+import { NgModule } from "@angular/core";
+
+import { ModalConnectionComponent } from "./modal-connection/modal-connection";
+import { ModalCreateOfferComponent } from "./modal-create-offer/modal-create-offer";
+import { ModalDisplayOfferComponent } from "./modal-display-offer/modal-display-offer";
+import { ModalProfileComponent } from "./modal-profile/modal-profile";
+
 @NgModule({
-	declarations: [ModalCreateOfferComponent,
+  declarations: [
     ModalConnectionComponent,
+    ModalCreateOfferComponent,
+    ModalDisplayOfferComponent,
     ModalProfileComponent,
-    ModalDisplayOfferComponent],
-	imports: [],
-	exports: [ModalCreateOfferComponent,
+  ],
+  exports: [
     ModalConnectionComponent,
+    ModalCreateOfferComponent,
+    ModalDisplayOfferComponent,
     ModalProfileComponent,
-    ModalDisplayOfferComponent]
+  ],
+  imports: [],
 })
 export class ComponentsModule {}
