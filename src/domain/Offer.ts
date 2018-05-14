@@ -16,6 +16,9 @@ export class Offer {
   public country: string;
   public server: string;
 
+  public game: string;
+  public currency: string;
+
   public user: string;
   public username: string;
 

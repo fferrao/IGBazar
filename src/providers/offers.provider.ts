@@ -30,6 +30,18 @@ export class OffersService {
     return this.http.get(url, {params});
   }
 
+  public getOffersByUser(gameId: string, uid: string): Observable<any> {
+    const url = "https://us-central1-igbazar-84e8e.cloudfunctions.net/getUserOffers";
+
+    let params = new HttpParams();
+
+    // Begin assigning parameters
+    params = params.append("gameId", gameId);
+    params = params.append("uid", uid);
+
+    return this.http.get(url, {params});
+  }
+
   public deleteOffer(gameId: string, offerId: string) {
     return this.firestore.collection<Offer>(this.getPath(gameId)).doc(offerId).delete();
   }

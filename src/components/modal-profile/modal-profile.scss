@@ -3,6 +3,14 @@ modal-profile {
     color: white !important;
   }
 
+  .content{
+    height: 100%;
+  }
+
+  ion-grid, .full-row  {
+    height: 96%;
+  }
+
   .title.title-md {
     width: 100%;
   }
@@ -14,5 +22,9 @@ modal-profile {
 
   .scroll-content {
     background-color: map-get($colors, primary);
+  }
+
+  .ordered-items {
+    height: 100%;
   }
 }

@@ -4,6 +4,10 @@ import * as admin from 'firebase-admin';
 admin.initializeApp(functions.config().firebase);
 const firestore = admin.firestore();
 
+/**
+ * Get offers filtered by name, price and server.
+ * @type {HttpsFunction}
+ */
 exports.getFilteredOffers = functions.https.onRequest((req, res) => {
   // Set cross origin
   res.set('Access-Control-Allow-Origin', "*");
@@ -34,6 +38,28 @@ exports.getFilteredOffers = functions.https.onRequest((req, res) => {
         result.push(offer)
       }
     });
+    res.status(200).send({data: result});
+  }).catch((err) => console.error(err));
+});
+
+/**
+ * Get offers filtered by user id.
+ * @type {HttpsFunction}
+ */
+exports.getUserOffers = functions.https.onRequest((req, res) => {
+  // Set cross origin
+  res.set('Access-Control-Allow-Origin', "*");
+  res.set('Access-Control-Allow-Methods', 'GET, POST');
+  console.log(req.query.uid);
+  let query = firestore.collection(`/games/${req.query.gameId}/offers`).where('user', '==', req.query.uid);
+
+  query.get().then((offers) => {
+    const result = offers.docs.map((doc) => {
+      const offer = doc.data();
+      offer.id = doc.id;
+      return offer;
+    });
+
     res.status(200).send({data: result});
   }).catch((err) => console.error(err));
 });

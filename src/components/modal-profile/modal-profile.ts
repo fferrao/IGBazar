@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { NavParams, ViewController } from "ionic-angular";
 
+import { OffersService } from "../../providers/offers.provider";
 import { UsersService } from "../../providers/users.provider";
 import { Utils } from "../../utils/Utils";
 
@@ -24,14 +25,17 @@ export class ModalProfileComponent {
   private gamesList: Game[];
   private names: {};
 
+  private offersUserSelling: any[];
+
   /**
    * Constructor of modal.
    * @param {ViewController} viewCtrl
    * @param {NavParams} navParams
+   * @param {OffersService} offersService
    * @param {UsersService} usersService
    * @param {Utils} utils
    */
-  constructor(private viewCtrl: ViewController, private navParams: NavParams, private usersService: UsersService,
+  constructor(private viewCtrl: ViewController, private navParams: NavParams, private offersService: OffersService, private usersService: UsersService,
               private utils: Utils) {
     this.gamesList = this.navParams.get("games");
 
@@ -45,6 +49,19 @@ export class ModalProfileComponent {
     this.email = this.usersService.getEmail();
 
     this.names = this.usersService.getNames();
+
+    this.offersUserSelling = [];
+
+    this.usersService.waitUntilLoginIn().then((uid) => {
+      const promises = [];
+
+      this.gamesList.forEach((game) => {
+        promises.push(this.offersService.getOffersByUser(game.id, uid).toPromise().then((res) => {
+          const offers = res.data;
+          this.offersUserSelling.push(...offers);
+        }));
+      });
+    });
   }
 
   /**

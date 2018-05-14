@@ -10,6 +10,7 @@ export class Game {
   public currency: string;
 
   public color: string;
+  public colorText: string;
   public logo: string;
   public placeholder: string;
   public servers: string[];

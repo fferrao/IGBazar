@@ -8,7 +8,8 @@
     "search": {
       "title": "Lance une recherche...",
       "or": "OU",
-      "select": "Choisi ton jeu !"
+      "select": "Choisi ton jeu !",
+      "infos": "Resumé / Infos"
     },
     "filter": {
       "item": "Objet",

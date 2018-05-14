@@ -38,6 +38,7 @@ export class HomePage implements OnInit {
   private quickSearch: string;
 
   private isLoading: boolean;
+  private isLoadingUser: boolean;
 
   // Fields data
   private language: string;
@@ -56,6 +57,9 @@ export class HomePage implements OnInit {
   private offersGlobalMap: Map<string, any[]>;
   private offersGlobalList: any[];
   private offersGlobalFilteredList: any[];
+
+  // User offers list
+  private offersUserSelling: any[];
 
   // Observable and Subscriptions
   private gamesObs: Observable<Game[]>;
@@ -85,6 +89,8 @@ export class HomePage implements OnInit {
 
     this.language = "en";
     this.isLoading = false;
+    this.isLoadingUser = false;
+
     this.translateService.setDefaultLang(this.language);
 
     this.selectedGame = null;
@@ -100,6 +106,8 @@ export class HomePage implements OnInit {
     this.offersGlobalMap = new Map<string, any[]>();
     this.offersGlobalList = [];
     this.offersGlobalFilteredList = [];
+
+    this.offersUserSelling = [];
   }
 
   /**
@@ -181,7 +189,8 @@ export class HomePage implements OnInit {
    * Update result on change value of filters of quick search.
    */
   public updateGlobalResult() {
-    const promises = [];
+    const promisesGame = [];
+    const promisesStatus = [];
 
     if (!this.selectedName) {
       this.offersGlobalFilteredList = [];
@@ -193,13 +202,13 @@ export class HomePage implements OnInit {
       // Separate offers inside a map and merge it at the end
       this.gamesList.forEach((game) => {
 
-        // For each games we query the database
-        this.offersService.getOffersByGameAndFilterCloud(
+        // Push promises to run filter and end loading at the end of all promises
+        promisesGame.push(this.offersService.getOffersByGameAndFilterCloud(
             game.id,
             this.selectedName,
             parseInt(this.selectedPrice, 10),
             this.selectedServers,
-        ).take(1).subscribe((res) => {
+        ).toPromise().then((res) => {
           const offers = res.data;
 
           // Set link between game and offers
@@ -210,7 +219,7 @@ export class HomePage implements OnInit {
             offer.gameId = game.id;
             offer.copyToClipboard = false;
 
-            promises.push(this.setOfferStatus(offer));
+            promisesStatus.push(this.setOfferStatus(offer));
             this.offersGlobalList.push(offer);
           });
 
@@ -218,12 +227,14 @@ export class HomePage implements OnInit {
             return a.price - b.price;
           });
 
-          Promise.all(promises).then(() => {
-            this.filterByStatus(this.offersGlobalList, true);
-            this.isLoading = false;
-          });
-
           this.filterByStatus(this.offersGlobalList, true);
+        }));
+      });
+
+      Promise.all(promisesGame).then(() => {
+        Promise.all(promisesStatus).then(() => {
+          this.filterByStatus(this.offersGlobalList, true);
+          this.isLoading = false;
         });
       });
     }
@@ -359,7 +370,7 @@ export class HomePage implements OnInit {
    * Delete an offer.
    * @param {string} offerId
    */
-  public deleteOffer(offerId: string) {
+  public deleteOffer(offerId: string, gameId: string) {
     this.alertController.create({
       buttons: [
         {
@@ -368,6 +379,7 @@ export class HomePage implements OnInit {
         }, {
           handler: () => {
             this.offersService.deleteOffer(this.selectedGame.id, offerId);
+            this.search();
           },
           text: "Delete",
         },

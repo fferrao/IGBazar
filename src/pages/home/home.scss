@@ -1,4 +1,35 @@
 page-home {
+  ion-navbar ion-searchbar {
+    width: 50%;
+    float: left;
+    height: 20px;
+
+    .searchbar-md .searchbar-search-icon {
+      top: 0;
+    }
+
+    input {
+      height: 20px;
+    }
+  }
+
+  .informations {
+    ion-card.card-md {
+      margin-top: 5px;
+      border: 1px solid white;
+      background-color: rgba(255, 255, 255, .5);
+    }
+
+    ion-col ion-col {
+      padding: 0;
+    }
+
+    h4 {
+      text-align: left;
+      font-size: 1.4em;
+    }
+  }
+
   .toolbar-background {
     background-color: transparent;
   }

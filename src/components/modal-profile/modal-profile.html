@@ -95,10 +95,24 @@
   <div class="content" *ngIf="selectedTab === 'histo'">
     <h3>{{'home.profile.histo' | translate}}</h3>
     <ion-grid>
-      <ion-row>
+      <ion-row class="full-row">
         <ion-col col-6>
           <h4>{{'home.profile.selling' | translate}}</h4>
-
+          <ion-scroll class="ordered-items" scrollY="true">
+            <ion-grid>
+              <ion-row *ngFor="let offer of offersUserSelling">
+                <ion-col col-12 text-left>
+                  <span class="offer-text">{{offer.name}}</span>
+                </ion-col>
+                <ion-col col-6 text-left>
+                  <span class="offer-text">{{offer.game}}</span>
+                </ion-col>
+                <ion-col col-6 text-right>
+                  <span class="offer-text">{{offer.price}}</span>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-scroll>
         </ion-col>
         <ion-col col-6>
           <h4>{{'home.profile.selled' | translate}}</h4>

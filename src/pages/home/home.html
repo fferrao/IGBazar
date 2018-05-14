@@ -20,21 +20,78 @@
 
 <ion-content>
 
-  <!-------------------------->
-  <!-- MAIN HOME SEARCH BAR -->
-  <!-------------------------->
   <div id="home" class="main-search" [ngStyle]="{'height': '330px'}">
-    <h1>{{'home.search.title' | translate}}</h1>
-    <ion-searchbar *ngIf="gamesList" [(ngModel)]="quickSearch"></ion-searchbar>
-    <ion-grid *ngIf="gamesList" class="quick-search-submit">
-      <ion-row>
-        <ion-col>
-          <button ion-button float-right scrollTo scrollTargetSelector="#quick-search" (click)="search()"
-                  [ngStyle]="{'visibility': quickSearch ? 'visible' : 'hidden'}">Go !</button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    <!-- h2>{{'home.search.or' | translate}}</h2 -->
+    <ion-slides>
+
+      <!-------------------------->
+      <!-- MAIN HOME SEARCH BAR -->
+      <!-------------------------->
+      <ion-slide>
+        <h1>{{'home.search.title' | translate}}</h1>
+        <ion-searchbar *ngIf="gamesList" [(ngModel)]="quickSearch" (search)="search()"></ion-searchbar>
+        <ion-grid *ngIf="gamesList" class="quick-search-submit">
+          <ion-row>
+            <ion-col>
+              <button ion-button float-right scrollTo scrollTargetSelector="#quick-search" (click)="search()"
+                      [ngStyle]="{'visibility': quickSearch ? 'visible' : 'hidden'}">Go !</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+
+      <!-------------------------->
+      <!-- MAIN PROFILE RESUME  -->
+      <!-------------------------->
+      <ion-slide>
+        <h1>{{'home.search.infos' | translate}}</h1>
+        <ion-grid class="informations">
+          <ion-row>
+            <ion-col col-5>
+              <ion-card>
+                <ion-card-header>
+                  <h4>Linoa</h4>
+                </ion-card-header>
+                <ion-card-content>
+                  <div class="text">6 offres en vente.</div>
+                  <div class="text">42 vente réalisées.</div>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col>800 K</ion-col>
+                      <ion-col>2000 PO</ion-col>
+                      <ion-col>8 000 KC</ion-col>
+                      <ion-col>146 PL</ion-col>
+                      <ion-col>12 000 K</ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+            <ion-col col-3>
+              <ion-row>
+                <ion-col col-12>
+                  <ion-card>
+                    CARD 2
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col col-12>
+                  <ion-card>
+                    CARD 3
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+            <ion-col col-4>
+              <ion-card>
+                CARD 4
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <!-- h2>{{'home.search.or' | translate}}</h2 -->
+      </ion-slide>
+    </ion-slides>
   </div>
 
   <!-------------------------->
@@ -143,10 +200,7 @@
               <span class="offer-text">{{offer.price}}</span>
             </ion-col>
             <ion-col col-2 text-center>
-              <button *ngIf="offer.user === usersService.getUid()" ion-button color="light" (click)="deleteOffer(offer.id)">
-                <ion-icon name="remove-circle"></ion-icon>
-              </button>
-              <button *ngIf="offer.user !== usersService.getUid()" ion-button color="light" (click)="setOfferCopyMode(offer, true)">
+              <button ion-button color="light" (click)="setOfferCopyMode(offer, true)">
                 <ion-icon name="chatbubbles"></ion-icon>
               </button>
               <button ion-button color="light" (click)="displayOffer(offer)">
@@ -314,10 +368,6 @@
     </ion-grid>
   </div>
 
-  <!-------------------------->
-  <!--  ADD ORDER BUTTON    -->
-  <!-------------------------->
-
 </ion-content>
 
 <!-------------------------->
@@ -345,4 +395,3 @@
     </ion-col -->
   </ion-row>
 </ion-footer>
-

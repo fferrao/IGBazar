@@ -41,6 +41,20 @@ export class UsersService {
   }
 
   /**
+   * Return a promise, resolved when user is logged in.
+   * @returns {Promise<void>}
+   */
+  public waitUntilLoginIn(): Promise<string>  {
+    return new Promise((resolve) => {
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          resolve(user.uid);
+        }
+      })
+    });
+  }
+
+  /**
    * Create a new account.
    * @param {string} mail
    * @param {string} password

@@ -57,8 +57,10 @@ export class ModalCreateOfferComponent {
       offer.username = this.usersService.getName();
       offer.user = this.usersService.getUid();
 
-      this.offersService.addOffer(this.selectedGame.id, offer);
+      offer.game = this.selectedGame.id;
+      offer.currency = this.selectedGame.currency;
 
+      this.offersService.addOffer(this.selectedGame.id, offer);
       this.dismiss();
     }
   }

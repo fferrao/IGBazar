@@ -8,7 +8,8 @@
     "search": {
       "title": "Make a quick search",
       "or": "OR",
-      "select": "Pick a game !"
+      "select": "Pick a game !",
+      "infos": "Resume / Infos"
     },
     "filter": {
       "item": "Item name",
